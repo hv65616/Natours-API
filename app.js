@@ -60,6 +60,19 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
 });
+
+// Put request update when any new entry id made while patch update the properties only
+// the following patch request will currently do not update any record as we have to properly include it but it will show how the things work out
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+  if (id > tours.length) {
+    return res.status(404).json({ status: 'faild', message: 'invalid id' });
+  }
+  res
+    .status(200)
+    .json({ status: 'success', data: { tour: '<updated tour here' } });
+});
+
 app.listen(port, () => {
   console.log('Server is listening on port 3000');
 });
