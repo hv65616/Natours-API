@@ -18,6 +18,24 @@ app.get('/api/v1/tours', (req, res) => {
     },
   });
 });
+
+// /:id - this is a variable defineing technique where we can pass a value to a variable and obtain result accoding to that
+app.get('/api/v1/tours/:id', (req, res) => {
+  // req.params - it will access the value that the user is passing as a argument
+  console.log(req.params);
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id == id);
+  if (id > tours.length) {
+    return res.status(404).json({ status: 'faild', message: 'invalid id' });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
 // post request for a end point that will used to send data to server and update it on the json file
 app.post('/api/v1/tours', (req, res) => {
   // finding the newid number using the tourlength +1
