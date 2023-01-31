@@ -8,8 +8,9 @@ app.use(express.json());
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
-// get request for a end point that will return the data int json format
-app.get('/api/v1/tours', (req, res) => {
+
+// we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
+const getalltours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -17,10 +18,12 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
-});
+};
+// get request for a end point that will return the data int json format
+// app.get('/api/v1/tours', getalltours);
 
-// /:id - this is a variable defineing technique where we can pass a value to a variable and obtain result accoding to that
-app.get('/api/v1/tours/:id', (req, res) => {
+// similary we have done for the post request
+const getaparticulartour = (req, res) => {
   // req.params - it will access the value that the user is passing as a argument
   console.log(req.params);
   const id = req.params.id * 1;
@@ -34,7 +37,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
+};
+// /:id - this is a variable defineing technique where we can pass a value to a variable and obtain result accoding to that
+app.get('/api/v1/tours/:id', getaparticulartour);
 
 // post request for a end point that will used to send data to server and update it on the json file
 app.post('/api/v1/tours', (req, res) => {
@@ -72,6 +77,18 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     .status(200)
     .json({ status: 'success', data: { tour: '<updated tour here' } });
 });
+
+// delete request is used to delete data matching particular id
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+  if (id > tours.length) {
+    return res.status(404).json({ status: 'faild', message: 'invalid id' });
+  }
+  res.status(204).json({ status: 'success', data: null });
+});
+
+// app.route is a way to chaining same type of request all together
+// app.route('/api/v1/tours').get(getalltours);
 
 app.listen(port, () => {
   console.log('Server is listening on port 3000');
