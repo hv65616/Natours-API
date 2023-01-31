@@ -4,23 +4,41 @@ const port = 3000;
 const fs = require('fs');
 // this is a middleware
 app.use(express.json());
+
+// get , post , delete etc are also middleware but these are particular fucntion middleware and the middle ware created by user are called in every sceneriao i.e it is applicable to everything and should included in top of other middleware
+// if you write this after a particulare middleware e.g get and hit the get request then this middleware will not get executed
+
+// custom middleware-1
+app.use((req, res, next) => {
+  console.log('Custom Middleware');
+  next();
+});
+// custom middleware-2
+app.use((req, res, next) => {
+  req.requesttime = new Date().toISOString();
+  next();
+});
+
 // Reading the tours-simple json file and including it in var tours
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
+// and also we have included the custom middleware 2 which will return the time
 const getalltours = (req, res) => {
+  console.log(req.requesttime);
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    requestedat: req.requesttime,
     data: {
       tours,
     },
   });
 };
 // get request for a end point that will return the data int json format
-// app.get('/api/v1/tours', getalltours);
+app.get('/api/v1/tours', getalltours);
 
 // similary we have done for the post request
 const getaparticulartour = (req, res) => {
