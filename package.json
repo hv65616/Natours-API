@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/hv65616/Natours-API#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
   }
 }
