@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const fs = require('fs');
+
+// morgan is an login dependency which is a 3rd party middleware
+const morgan = require('morgan');
+// it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
+app.use(morgan('dev'));
 // this is a middleware
 app.use(express.json());
 
@@ -107,6 +112,39 @@ app.delete('/api/v1/tours/:id', (req, res) => {
 
 // app.route is a way to chaining same type of request all together
 // app.route('/api/v1/tours').get(getalltours);
+
+const getallusers = (req, res) => {
+  res
+    .status(500)
+    .json({ status: 'error', message: 'this route is not yet definded' });
+};
+
+const creatuser = (req, res) => {
+  res
+    .status(500)
+    .json({ status: 'error', message: 'this route is not yet definded' });
+};
+
+const getuser = (req, res) => {
+  res
+    .status(500)
+    .json({ status: 'error', message: 'this route is not yet definded' });
+};
+
+const updateuser = (req, res) => {
+  res
+    .status(500)
+    .json({ status: 'error', message: 'this route is not yet definded' });
+};
+
+const deleteuser = (req, res) => {
+  res
+    .status(500)
+    .json({ status: 'error', message: 'this route is not yet definded' });
+};
+app.route('/api/v1/user').get(getallusers).post(creatuser);
+
+app.route('/api/v1/user/:id').get(getuser).patch(updateuser).delete(deleteuser);
 
 app.listen(port, () => {
   console.log('Server is listening on port 3000');
