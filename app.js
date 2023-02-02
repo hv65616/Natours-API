@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const fs = require('fs');
+const userrouter = express.Router();
 
 // morgan is an login dependency which is a 3rd party middleware
 const morgan = require('morgan');
@@ -142,9 +143,12 @@ const deleteuser = (req, res) => {
     .status(500)
     .json({ status: 'error', message: 'this route is not yet definded' });
 };
-app.route('/api/v1/user').get(getallusers).post(creatuser);
+userrouter.route('/').get(getallusers).post(creatuser);
 
-app.route('/api/v1/user/:id').get(getuser).patch(updateuser).delete(deleteuser);
+userrouter.route('/:id').get(getuser).patch(updateuser).delete(deleteuser);
+
+// including the router for the users
+app.use('/api/v1/user', userrouter);
 
 app.listen(port, () => {
   console.log('Server is listening on port 3000');
