@@ -3,6 +3,7 @@ const app = express();
 const port = 3000;
 const fs = require('fs');
 const userrouter = express.Router();
+const toursrouter = express.Router();
 
 // morgan is an login dependency which is a 3rd party middleware
 const morgan = require('morgan');
@@ -103,25 +104,6 @@ const deletetour = (req, res) => {
   res.status(204).json({ status: 'success', data: null });
 };
 
-// get request for a end point that will return the data int json format
-app.get('/api/v1/tours', getalltours);
-
-// post request for a end point that will used to send data to server and update it on the json file
-app.post('/api/v1/tours', createnewtour);
-
-// /:id - this is a variable defineing technique where we can pass a value to a variable and obtain result accoding to that
-app.get('/api/v1/tours/:id', getaparticulartour);
-
-// Put request update when any new entry id made while patch update the properties only
-// the following patch request will currently do not update any record as we have to properly include it but it will show how the things work out
-app.patch('/api/v1/tours/:id', updatetour);
-
-// delete request is used to delete data matching particular id
-app.delete('/api/v1/tours/:id', deletetour);
-
-// app.route is a way to chaining same type of request all together
-// app.route('/api/v1/tours').get(getalltours);
-
 const getallusers = (req, res) => {
   res
     .status(500)
@@ -151,6 +133,36 @@ const deleteuser = (req, res) => {
     .status(500)
     .json({ status: 'error', message: 'this route is not yet definded' });
 };
+
+toursrouter.route('/').get(getalltours).post(createnewtour);
+toursrouter
+  .route('/:id')
+  .get(getaparticulartour)
+  .patch(updatetour)
+  .delete(deletetour);
+
+// including router for the tours
+app.use('/api/v1/tours', toursrouter);
+
+// get request for a end point that will return the data int json format
+// app.get('/api/v1/tours', getalltours);
+
+// post request for a end point that will used to send data to server and update it on the json file
+// app.post('/api/v1/tours', createnewtour);
+
+// /:id - this is a variable defineing technique where we can pass a value to a variable and obtain result accoding to that
+// app.get('/api/v1/tours/:id', getaparticulartour);
+
+// Put request update when any new entry id made while patch update the properties only
+// the following patch request will currently do not update any record as we have to properly include it but it will show how the things work out
+// app.patch('/api/v1/tours/:id', updatetour);
+
+// delete request is used to delete data matching particular id
+// app.delete('/api/v1/tours/:id', deletetour);
+
+// app.route is a way to chaining same type of request all together
+// app.route('/api/v1/tours').get(getalltours);
+
 userrouter.route('/').get(getallusers).post(creatuser);
 
 userrouter.route('/:id').get(getuser).patch(updateuser).delete(deleteuser);
