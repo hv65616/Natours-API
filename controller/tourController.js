@@ -3,6 +3,17 @@ const fs = require('fs');
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
+
+// checkid as a param middleware
+const checkid = (req, res, next, val) => {
+  console.log(`Tour id is : ${val}`);
+  const id = req.params.id * 1;
+  if (id > tours.length) {
+    return res.status(404).json({ status: 'faild', message: 'invalid id' });
+  }
+  next();
+};
+
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
 const getalltours = (req, res) => {
@@ -59,20 +70,12 @@ const getaparticulartour = (req, res) => {
 };
 
 const updatetour = (req, res) => {
-  const id = req.params.id * 1;
-  if (id > tours.length) {
-    return res.status(404).json({ status: 'faild', message: 'invalid id' });
-  }
   res
     .status(200)
     .json({ status: 'success', data: { tour: '<updated tour here' } });
 };
 
 const deletetour = (req, res) => {
-  const id = req.params.id * 1;
-  if (id > tours.length) {
-    return res.status(404).json({ status: 'faild', message: 'invalid id' });
-  }
   res.status(204).json({ status: 'success', data: null });
 };
 
@@ -82,4 +85,5 @@ module.exports = {
   updatetour,
   deletetour,
   getaparticulartour,
+  checkid,
 };
