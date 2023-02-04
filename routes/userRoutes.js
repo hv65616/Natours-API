@@ -1,6 +1,8 @@
 const express = require('express');
+
 const userrouter = express.Router();
 const usercontroller = require('../controller/userController');
+
 userrouter
   .route('/')
   .get(usercontroller.getallusers)
