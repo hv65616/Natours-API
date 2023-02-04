@@ -14,6 +14,15 @@ const checkid = (req, res, next, val) => {
   next();
 };
 
+const checkbody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res
+      .status(400)
+      .json({ status: 'failed', message: 'missing name and price' });
+  }
+  next();
+};
+
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
 const getalltours = (req, res) => {
@@ -86,4 +95,5 @@ module.exports = {
   deletetour,
   getaparticulartour,
   checkid,
+  checkbody,
 };
