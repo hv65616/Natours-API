@@ -4,11 +4,16 @@ const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
 // morgan is an login dependency which is a 3rd party middleware
 const morgan = require('morgan');
-// it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
-app.use(morgan('dev'));
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
+  app.use(morgan('dev'));
+}
 
 // this is a middleware
 app.use(express.json());
+// serving static file from a folder
+app.use(express.static(`${__dirname}/public`));
 
 // custom middleware-1
 app.use((req, res, next) => {
