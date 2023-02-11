@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
-const toursrouter = require('./routes/tourRoutes');
-const userrouter = require('./routes/userRoutes');
 // morgan is an login dependency which is a 3rd party middleware
 const morgan = require('morgan');
+const toursrouter = require('./routes/tourRoutes');
+const userrouter = require('./routes/userRoutes');
 // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
 app.use(morgan('dev'));
 
