@@ -4,8 +4,11 @@ const app = express();
 const morgan = require('morgan');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
-// it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
-app.use(morgan('dev'));
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
+  app.use(morgan('dev'));
+}
 
 // this is a middleware
 app.use(express.json());
