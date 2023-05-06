@@ -1,18 +1,19 @@
 const fs = require('fs');
 // Reading the tours-simple json file and including it in var tours
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
+// const tours = JSON.parse(
+//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+// );
+const Tour = require('../models/tourModels');
 
 // checkid as a param middleware
-const checkid = (req, res, next, val) => {
-  console.log(`Tour id is : ${val}`);
-  const id = req.params.id * 1;
-  if (id > tours.length) {
-    return res.status(404).json({ status: 'faild', message: 'invalid id' });
-  }
-  next();
-};
+// const checkid = (req, res, next, val) => {
+//   console.log(`Tour id is : ${val}`);
+//   const id = req.params.id * 1;
+//   if (id > tours.length) {
+//     return res.status(404).json({ status: 'faild', message: 'invalid id' });
+//   }
+//   next();
+// };
 
 const checkbody = (req, res, next) => {
   if (!req.body.name || !req.body.price) {
@@ -29,14 +30,16 @@ const getalltours = (req, res) => {
   console.log(req.requesttime);
   res.status(200).json({
     status: 'success',
-    results: tours.length,
     requestedat: req.requesttime,
-    data: {
-      tours,
-    },
+    // results: tours.length,
+    // data: {
+    //   tours,
+    // },
   });
 };
 
+// This is discarded in further developement process as it uses the local json file for fetching and updating the data
+/*
 const createnewtour = (req, res) => {
   // finding the newid number using the tourlength +1
   const newid = tours[tours.length - 1].id + 1;
@@ -60,22 +63,29 @@ const createnewtour = (req, res) => {
     }
   );
 };
+ */
+
+const createnewtour = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+  });
+};
 
 // similary we have done for the post request
 const getaparticulartour = (req, res) => {
   // req.params - it will access the value that the user is passing as a argument
   console.log(req.params);
   const id = req.params.id * 1;
-  const tour = tours.find((el) => el.id == id);
-  if (id > tours.length) {
-    return res.status(404).json({ status: 'faild', message: 'invalid id' });
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
+  // const tour = tours.find((el) => el.id == id);
+  // if (id > tours.length) {
+  //   return res.status(404).json({ status: 'faild', message: 'invalid id' });
+  // }
+  // res.status(200).json({
+  //   status: 'success',
+  //   data: {
+  //     tour,
+  //   },
+  // });
 };
 
 const updatetour = (req, res) => {
@@ -94,6 +104,5 @@ module.exports = {
   updatetour,
   deletetour,
   getaparticulartour,
-  checkid,
   checkbody,
 };
