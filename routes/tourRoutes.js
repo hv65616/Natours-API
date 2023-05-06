@@ -2,7 +2,7 @@ const express = require('express');
 const toursrouter = express.Router();
 const tourcontroller = require('../controller/tourController');
 // param midlleware
-toursrouter.param('id', tourcontroller.checkid);
+// toursrouter.param('id', tourcontroller.checkid);
 toursrouter
   .route('/')
   .get(tourcontroller.getalltours)
