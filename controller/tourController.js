@@ -119,10 +119,19 @@ const getaparticulartour = async (req, res) => {
   // });
 };
 
-const updatetour = (req, res) => {
-  res
-    .status(200)
-    .json({ status: 'success', data: { tour: '<updated tour here' } });
+const updatetour = async (req, res) => {
+  try {
+    const tourupdate = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({ status: 'success', data: tourupdate });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
 };
 
 const deletetour = (req, res) => {
