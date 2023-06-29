@@ -15,14 +15,15 @@ const Tour = require('../models/tourModels');
 //   next();
 // };
 
-const checkbody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res
-      .status(400)
-      .json({ status: 'failed', message: 'missing name and price' });
-  }
-  next();
-};
+// No longer needed
+// const checkbody = (req, res, next) => {
+//   if (!req.body.name || !req.body.price) {
+//     return res
+//       .status(400)
+//       .json({ status: 'failed', message: 'missing name and price' });
+//   }
+//   next();
+// };
 
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
@@ -65,10 +66,22 @@ const createnewtour = (req, res) => {
 };
  */
 
-const createnewtour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-  });
+const createnewtour = async (req, res) => {
+  try {
+    const newtour = await Tour.create(req.body);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: newtour,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
 };
 
 // similary we have done for the post request
@@ -104,5 +117,4 @@ module.exports = {
   updatetour,
   deletetour,
   getaparticulartour,
-  checkbody,
 };
