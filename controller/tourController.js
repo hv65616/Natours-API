@@ -27,16 +27,22 @@ const Tour = require('../models/tourModels');
 
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
-const getalltours = (req, res) => {
-  console.log(req.requesttime);
-  res.status(200).json({
-    status: 'success',
-    requestedat: req.requesttime,
-    // results: tours.length,
-    // data: {
-    //   tours,
-    // },
-  });
+const getalltours = async (req, res) => {
+  try {
+    const alltours = await Tour.find();
+    res.status(200).json({
+      status: 'success',
+      data: {
+        alltours,
+      },
+    });
+  } catch (error) {
+    // console.log(error);
+    res.status(400).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
@@ -76,7 +82,7 @@ const createnewtour = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(400).json({
       status: 'fail',
       message: error.message,
@@ -85,10 +91,22 @@ const createnewtour = async (req, res) => {
 };
 
 // similary we have done for the post request
-const getaparticulartour = (req, res) => {
+const getaparticulartour = async (req, res) => {
   // req.params - it will access the value that the user is passing as a argument
-  console.log(req.params);
-  const id = req.params.id * 1;
+  try {
+    const singletour = await Tour.findById(req.params.id);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: singletour,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
   // const tour = tours.find((el) => el.id == id);
   // if (id > tours.length) {
   //   return res.status(404).json({ status: 'faild', message: 'invalid id' });
