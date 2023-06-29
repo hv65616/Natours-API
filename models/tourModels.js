@@ -18,4 +18,4 @@ const tourSchema = new mongoose.Schema({
 
 // We have included our tourschema into tour and this will be used for providing data to the mongodb database
 const Tour = mongoose.model('Tour', tourSchema);
-module.export = Tour;
+module.exports = Tour;
