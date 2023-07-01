@@ -29,7 +29,27 @@ const Tour = require('../models/tourModels');
 // and also we have included the custom middleware 2 which will return the time
 const getalltours = async (req, res) => {
   try {
-    const alltours = await Tour.find();
+    // {...req.query} this create a copy of object so that original object remain unaffected to the changes
+    // Here we are performing filtering i.e all the field name present in excludedfield if they are not found as value of query then only those field name will be considered whose value is present and then if we pass these valid to as query output will be shown
+    const queryobject = { ...req.query };
+    const excludedfield = ['page', 'sort', 'limit', 'fields'];
+    excludedfield.forEach((el) => delete queryobject[el]);
+    // console.log(req.query, queryobject);
+
+    // There are two ways for passing query into database and retreiving data based on query
+
+    // Method-1
+    // const alltours = await Tour.find({
+    //   duration: 5,
+    //   difficulty: 'easy',
+    // });
+
+    // Method-2
+    // const alltours = await Tour.find(req.query);
+    const alltours = await Tour.find(queryobject);
+
+    // Now from both these methods method 2 is much more convivenet as there is no static query being passed which will help user to search according to query that being pass on time
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -44,33 +64,6 @@ const getalltours = async (req, res) => {
     });
   }
 };
-
-// This is discarded in further developement process as it uses the local json file for fetching and updating the data
-/*
-const createnewtour = (req, res) => {
-  // finding the newid number using the tourlength +1
-  const newid = tours[tours.length - 1].id + 1;
-  // here it will store the newtour passed through postman in json format when the post request made and assign the id and details to the var newtour and then push the new tour into the tours where all the previous tours are stored
-  const newtour = Object.assign({ id: newid }, req.body);
-  tours.push(newtour);
-  // this section is reponsible for updating the tours-simple json file with the new tour entry then will be made by post request
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          // this will the new entry made as the post request hit
-          tour: newtour,
-          // this will show the all the entries
-          // tours,
-        },
-      });
-    }
-  );
-};
- */
 
 const createnewtour = async (req, res) => {
   try {
@@ -157,3 +150,31 @@ module.exports = {
   deletetour,
   getaparticulartour,
 };
+
+
+// This is discarded in further developement process as it uses the local json file for fetching and updating the data
+/*
+const createnewtour = (req, res) => {
+  // finding the newid number using the tourlength +1
+  const newid = tours[tours.length - 1].id + 1;
+  // here it will store the newtour passed through postman in json format when the post request made and assign the id and details to the var newtour and then push the new tour into the tours where all the previous tours are stored
+  const newtour = Object.assign({ id: newid }, req.body);
+  tours.push(newtour);
+  // this section is reponsible for updating the tours-simple json file with the new tour entry then will be made by post request
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          // this will the new entry made as the post request hit
+          tour: newtour,
+          // this will show the all the entries
+          // tours,
+        },
+      });
+    }
+  );
+};
+ */
