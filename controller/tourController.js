@@ -27,6 +27,7 @@ const Tour = require('../models/tourModels');
 
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
+
 const getalltours = async (req, res) => {
   try {
     // ******FILTERING*********
@@ -39,7 +40,10 @@ const getalltours = async (req, res) => {
 
     // **********ADVANCED FILTERING************
     let querystring = JSON.stringify(queryobject);
-    querystring = querystring.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    querystring = querystring.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`
+    );
     // console.log(JSON.parse(querystring));
 
     // ********PASSING OR MAKING QUERY*************
@@ -56,12 +60,22 @@ const getalltours = async (req, res) => {
     // **********EXECUTINH QUERY WITH FILTER DATA
     // const alltours = await Tour.find(queryobject);
 
-    // ***********EXECUTING QUERY WITH ADVANCE FILTERING
-    const alltours = await Tour.find(JSON.parse(querystring));
+    // **********SORTING*********
+    let querysort = Tour.find(JSON.parse(querystring));
+    if (req.query.sort) {
+      const sortby = req.query.sort.split(',').join(' ');
+      querysort = querysort.sort(sortby);
+    } else {
+      querysort = querysort.sort('-createdAt');
+    }
+
+    // ***********EXECUTING QUERY WITH ADVANCE FILTERING AND WITH SORTING
+    const alltours = await querysort;
 
     // ********SENDING RESPONSE*********
     res.status(200).json({
       status: 'success',
+      result: alltours.length,
       data: {
         alltours,
       },
