@@ -69,6 +69,13 @@ const getalltours = async (req, res) => {
       querysort = querysort.sort('-createdAt');
     }
 
+    // **********FIELD LIMITATION***********
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      querysort = querysort.select(fields);
+    } else {
+      querysort = querysort.select('-__v');
+    }
     // ***********EXECUTING QUERY WITH ADVANCE FILTERING AND WITH SORTING
     const alltours = await querysort;
 
