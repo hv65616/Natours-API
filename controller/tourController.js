@@ -76,6 +76,18 @@ const getalltours = async (req, res) => {
     } else {
       querysort = querysort.select('-__v');
     }
+
+    // **********PAGINATION************
+    const pagenumber = req.query.page * 1 || 1;
+    const pageresults = req.query.limit * 1 || 100;
+    const skippages = (pagenumber - 1) * pageresults;
+    querysort = querysort.skip(skippages).limit(pageresults);
+    if (req.query.pagenumber) {
+      const numberoftours = await Tour.countDocuments();
+      if (skippages >= numberoftours)
+        throw new Error('This page does not exist');
+    }
+
     // ***********EXECUTING QUERY WITH ADVANCE FILTERING AND WITH SORTING
     const alltours = await querysort;
 
