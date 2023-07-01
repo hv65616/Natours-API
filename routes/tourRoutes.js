@@ -3,6 +3,11 @@ const toursrouter = express.Router();
 const tourcontroller = require('../controller/tourController');
 // param midlleware
 // toursrouter.param('id', tourcontroller.checkid);
+
+//middleware for finding top 5 cheap tours
+toursrouter
+  .route('/top-5-cheaptours')
+  .get(tourcontroller.aliastoptours, tourcontroller.getalltours);
 toursrouter
   .route('/')
   .get(tourcontroller.getalltours)
