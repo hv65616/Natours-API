@@ -5,6 +5,14 @@ const fs = require('fs');
 // );
 const Tour = require('../models/tourModels');
 
+// created a middleware for functioning of endpoint named as top-5-cheaptours and in this middle ware we are passing default values for limit sort and fields
+const aliastoptours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 // checkid as a param middleware
 // const checkid = (req, res, next, val) => {
 //   console.log(`Tour id is : ${val}`);
@@ -192,6 +200,7 @@ module.exports = {
   updatetour,
   deletetour,
   getaparticulartour,
+  aliastoptours,
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
