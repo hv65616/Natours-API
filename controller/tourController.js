@@ -4,6 +4,7 @@ const fs = require('fs');
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
 const Tour = require('../models/tourModels');
+const apifeatures = require("../utils/apiFeatures.js")
 
 // created a middleware for functioning of endpoint named as top-5-cheaptours and in this middle ware we are passing default values for limit sort and fields
 const aliastoptours = (req, res, next) => {
@@ -33,27 +34,13 @@ const aliastoptours = (req, res, next) => {
 //   next();
 // };
 
+
+
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
 
 const getalltours = async (req, res) => {
   try {
-    // ******FILTERING*********
-    // {...req.query} this create a copy of object so that original object remain unaffected to the changes
-    // Here we are performing filtering i.e all the field name present in excludedfield if they are not found as value of query then only those field name will be considered whose value is present and then if we pass these valid to as query output will be shown
-    const queryobject = { ...req.query };
-    const excludedfield = ['page', 'sort', 'limit', 'fields'];
-    excludedfield.forEach((el) => delete queryobject[el]);
-    // console.log(req.query, queryobject);
-
-    // **********ADVANCED FILTERING************
-    let querystring = JSON.stringify(queryobject);
-    querystring = querystring.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`
-    );
-    // console.log(JSON.parse(querystring));
-
     // ********PASSING OR MAKING QUERY*************
     // There are two ways for passing query into database and retreiving data based on query
     // Method-1
@@ -65,39 +52,12 @@ const getalltours = async (req, res) => {
     // const alltours = await Tour.find(req.query);
     // Now from both these methods method 2 is much more convivenet as there is no static query being passed which will help user to search according to query that being pass on time
 
-    // **********EXECUTINH QUERY WITH FILTER DATA
-    // const alltours = await Tour.find(queryobject);
-
-    // **********SORTING*********
-    let querysort = Tour.find(JSON.parse(querystring));
-    if (req.query.sort) {
-      const sortby = req.query.sort.split(',').join(' ');
-      querysort = querysort.sort(sortby);
-    } else {
-      querysort = querysort.sort('-createdAt');
-    }
-
-    // **********FIELD LIMITATION***********
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      querysort = querysort.select(fields);
-    } else {
-      querysort = querysort.select('-__v');
-    }
-
-    // **********PAGINATION************
-    const pagenumber = req.query.page * 1 || 1;
-    const pageresults = req.query.limit * 1 || 100;
-    const skippages = (pagenumber - 1) * pageresults;
-    querysort = querysort.skip(skippages).limit(pageresults);
-    if (req.query.pagenumber) {
-      const numberoftours = await Tour.countDocuments();
-      if (skippages >= numberoftours)
-        throw new Error('This page does not exist');
-    }
-
-    // ***********EXECUTING QUERY WITH ADVANCE FILTERING AND WITH SORTING
-    const alltours = await querysort;
+    const features = new apifeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limiting()
+      .pagination();
+    const alltours = await features.query;
 
     // ********SENDING RESPONSE*********
     res.status(200).json({
