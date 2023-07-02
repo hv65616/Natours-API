@@ -8,7 +8,8 @@ const tourcontroller = require('../controller/tourController');
 toursrouter
   .route('/top-5-cheaptours')
   .get(tourcontroller.aliastoptours, tourcontroller.getalltours);
-toursrouter.route("/tour-stats").get(tourcontroller.gettourstats)
+toursrouter.route('/tour-stats').get(tourcontroller.gettourstats);
+toursrouter.route('/monthly-plan/:year').get(tourcontroller.getmonthlyplans);
 toursrouter
   .route('/')
   .get(tourcontroller.getalltours)
