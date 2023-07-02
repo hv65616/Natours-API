@@ -4,7 +4,7 @@ const fs = require('fs');
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
 const Tour = require('../models/tourModels');
-const apifeatures = require("../utils/apiFeatures.js")
+const apifeatures = require('../utils/apiFeatures.js');
 
 // created a middleware for functioning of endpoint named as top-5-cheaptours and in this middle ware we are passing default values for limit sort and fields
 const aliastoptours = (req, res, next) => {
@@ -33,8 +33,6 @@ const aliastoptours = (req, res, next) => {
 //   }
 //   next();
 // };
-
-
 
 // we made a custom fucntion for the get request and now instead of writing same code and on singele fucntion we can import this directly
 // and also we have included the custom middleware 2 which will return the time
@@ -154,6 +152,42 @@ const deletetour = async (req, res) => {
   }
 };
 
+// Implementing aggregation pipeline
+const gettourstats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: '$difficulty',
+          numberoftous: { $sum: 1 },
+          totalratings: { $sum: '$ratingsQuantity' },
+          avgrating: { $avg: '$ratingsAverage' },
+          avgprice: { $avg: '$price' },
+          minprice: { $min: '$price' },
+          maxprice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: {
+          numberoftours: 1,
+        },
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: stats,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getalltours,
   createnewtour,
@@ -161,6 +195,7 @@ module.exports = {
   deletetour,
   getaparticulartour,
   aliastoptours,
+  gettourstats,
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
