@@ -188,6 +188,61 @@ const gettourstats = async (req, res) => {
   }
 };
 
+// Implementing more functionality of aggregation pipeline
+const getmonthlyplans = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numtourstarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: {
+          month: '$_id',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          numtourstarts: -1,
+        },
+      },
+      {
+        $limit: 12,
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      result: plan.length,
+      data: plan,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getalltours,
   createnewtour,
@@ -196,6 +251,7 @@ module.exports = {
   getaparticulartour,
   aliastoptours,
   gettourstats,
+  getmonthlyplans,
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
