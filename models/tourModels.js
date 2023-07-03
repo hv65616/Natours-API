@@ -57,6 +57,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
     },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -83,6 +87,28 @@ tourSchema.pre('save', function (next) {
 //   console.log(doc);
 //   next();
 // });
+
+// query middleware: used to run before and after executing a query
+// there are two ways pre and post pre is used to run before executing a query and used to find the result with the object specify to it while post is used to find result after executing query
+// we use regex to avoid bug like where secret is set to true but if you search by id it give us the output so for that we use regex which will avoid all the find function start with find to exectute for secret
+/* 
+tourSchema.pre('find', function (next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+tourSchema.pre('findOne', function (next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+*/
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(docs);
+  next();
+});
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
 
