@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -6,6 +7,9 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
+    },
+    slug: {
+      type: String,
     },
     duration: {
       type: Number,
@@ -64,6 +68,21 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationweeks').get(function () {
   return this.duration / 7;
 });
+
+// document middleware : runs before the save command and create command
+// the pre middleware used to execite before we save any document of save command execute
+tourSchema.pre('save', function (next) {
+  // console.log(this);
+  // the slugify used here is used to extract name from the document that is being saved and store it seperate in scheme be defining seperate in schema
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// post also perform the same but it execute after document being saved
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
 
