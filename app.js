@@ -4,6 +4,8 @@ const app = express();
 const morgan = require('morgan');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
+const apperror = require('./utils/appError');
+const errorController = require('./controller/errorController');
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') {
   // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
@@ -33,26 +35,11 @@ app.use('/api/v1/user', userrouter);
 
 // route for all invalid request and should always put atlast
 app.all('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'fail',
-  //   message: `Can't find ${req.originalUrl} on this server!`,
-  // });
-
-  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
-  err.status = 'fail';
-  err.statusCode = 404;
-  next(err);
+  next(new apperror(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 // Simpel error handling middleware
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(errorController);
 
 module.exports = app;
 
