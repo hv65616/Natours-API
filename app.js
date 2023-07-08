@@ -31,6 +31,14 @@ app.use('/api/v1/tours', toursrouter);
 // including the router for the users
 app.use('/api/v1/user', userrouter);
 
+// route for all invalid request and should always put atlast
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `Can't find ${req.originalUrl} on this server!`,
+  });
+});
+
 module.exports = app;
 
 // get request for a end point that will return the data int json format
