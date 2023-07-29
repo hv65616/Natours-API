@@ -6,6 +6,7 @@ const fs = require('fs');
 const Tour = require('../models/tourModels');
 const apifeatures = require('../utils/apiFeatures.js');
 const catchasync = require('../utils/catchAsync');
+const appError = require('../utils/appError');
 // created a middleware for functioning of endpoint named as top-5-cheaptours and in this middle ware we are passing default values for limit sort and fields
 const aliastoptours = (req, res, next) => {
   req.query.limit = '5';
@@ -80,6 +81,9 @@ const createnewtour = catchasync(async (req, res, next) => {
 const getaparticulartour = catchasync(async (req, res, next) => {
   // req.params - it will access the value that the user is passing as a argument
   const singletour = await Tour.findById(req.params.id);
+  if (!singletour) {
+    return next(new appError('No tour found with that ID', 404));
+  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -103,11 +107,17 @@ const updatetour = catchasync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+  if (!tourupdate) {
+    return next(new appError('No tour with that ID exist', 404));
+  }
   res.status(200).json({ status: 'success', data: tourupdate });
 });
 
 const deletetour = catchasync(async (req, res, next) => {
   const tourdelete = await Tour.findByIdAndDelete(req.params.id);
+  if (!tourdelete) {
+    return next(new appError('No tour with that ID exist', 404));
+  }
   res.status(204).json({
     status: 'success',
     data: tourdelete,
