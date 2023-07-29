@@ -30,6 +30,11 @@ const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new appError(message, 400);
 };
+// This function is responsible to handle error where our database contains duplicate values
+const handleDuplicateErrorDB = (err) => {
+  const messgae = `Duplicate field value ${err.keyValue.name}. Please use another value!!`;
+  return new appError(messgae, 400);
+};
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -39,6 +44,9 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
+    }
+    if (err.code === 11000) {
+      error = handleDuplicateErrorDB(error);
     }
     senderrorforprod(error, res);
   }
