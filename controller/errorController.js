@@ -35,6 +35,12 @@ const handleDuplicateErrorDB = (err) => {
   const messgae = `Duplicate field value ${err.keyValue.name}. Please use another value!!`;
   return new appError(messgae, 400);
 };
+// This function is responsible to handle error which occur due to invalid updation like violating any constraints
+const handleValidationErrorDB = (err) => {
+  const errorvalue = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid Input Data. ${errorvalue.join('.')}`;
+  return new appError(message, 400);
+};
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -47,6 +53,9 @@ module.exports = (err, req, res, next) => {
     }
     if (err.code === 11000) {
       error = handleDuplicateErrorDB(error);
+    }
+    if (err.name === 'ValidationError') {
+      error = handleValidationErrorDB(error);
     }
     senderrorforprod(error, res);
   }
