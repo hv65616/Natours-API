@@ -7,6 +7,16 @@ const db = process.env.DATABASE.replace(
   '<password>',
   process.env.DATABASE_PASSWORD
 );
+
+// This middleware is responsible to handle uncaught exception
+process.on('uncaughtException', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNCAUGHT EXCEPTION!!!!  Shutting Down');
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
 // console.log(app.get('env'));
 // console.log(process.env);
 mongoose
@@ -41,7 +51,7 @@ const server = app.listen(port, () => {
 // This particular middleware will execute when we have any unhandled rejection in our application which further lead to closing the application
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
-  console.log('UNHANDLED REJECTION!!!!  Shutting Down Application....');
+  console.log('UNHANDLED REJECTION!!!!  Shutting Down');
   server.close(() => {
     process.exit(1);
   });
