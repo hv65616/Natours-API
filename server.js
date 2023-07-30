@@ -22,7 +22,7 @@ mongoose
     console.log('DB connection successful');
   });
 
-// Below code is used 
+// Below code is used
 // const testTour = new Tour({
 //   name: 'The Park Campher',
 //   rating: 4.7,
@@ -34,8 +34,17 @@ mongoose
 //   console.log(err);
 // })
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log('Server is listening on port 3000');
+});
+
+// This particular middleware will execute when we have any unhandled rejection in our application which further lead to closing the application
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION!!!!  Shutting Down Application....');
+  server.close(() => {
+    process.exit(1);
+  });
 });
 
 // mongodb+srv://vermah564:<password>@cluster0.qpawwas.mongodb.net/Natours?retryWrites=true&w=majority
