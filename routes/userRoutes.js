@@ -1,6 +1,10 @@
 const express = require('express');
 const userrouter = express.Router();
 const usercontroller = require('../controller/userController');
+// Adding the route for the creating user
+const authcontroller = require('../controller/authController');
+userrouter.post('/signup', authcontroller.signup);
+
 userrouter
   .route('/')
   .get(usercontroller.getallusers)
