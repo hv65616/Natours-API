@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const catchasync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const apperror = require('../utils/appError');
+const { promisify } = require('util');
 // the below signup route implementation is for when new user signup
 const signup = catchasync(async (req, res, next) => {
   // This piece of code is wrong as it store all the data and anyone can access the data by registerign themselves as admin
@@ -14,8 +15,9 @@ const signup = catchasync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-  // JWT Auth token created which is using id of the user and later storing that token into the database
-  const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET, {
+  // JWT Auth token created which is using id of the user and later storing that token into the database. The below created jwt token does not store id into its token
+  const payload = { id: newuser._id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   res.status(201).json({
@@ -52,4 +54,39 @@ const login = catchasync(async (req, res, next) => {
     token,
   });
 });
-module.exports = { signup, login };
+
+// This middleware is used which allow user to first login then see all the tours available
+const protect = catchasync(async (req, res, next) => {
+  // get token and check if its there or not
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(
+      new apperror('Your are not logged in! Please login to get access', 401)
+    );
+  }
+  // validate the token or verification of token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  // check if user exists
+  const freshuser = await User.findById(decoded.id);
+  if (!freshuser) {
+    return next(
+      new apperror('The user belonging to token does not no longer exist', 401)
+    );
+  }
+  // check if user change password after token was issued
+  if (freshuser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new apperror('User recently chnaged password. Please login again', 401)
+    );
+  }
+  // grant access to protected route
+  req.user = freshuser;
+  next();
+});
+module.exports = { signup, login, protect };
