@@ -41,6 +41,14 @@ const handleValidationErrorDB = (err) => {
   const message = `Invalid Input Data. ${errorvalue.join('.')}`;
   return new appError(message, 400);
 };
+// This function is responsible to handle error which occur when someone try to change the jwt
+const handlejsonwebtokenerror = (err) => {
+  return new appError('Invalid token. Please Login again.', 401);
+};
+// This function is responsible to handle error which occur when token get expired
+const handletokenexpirederror = (err) => {
+  return new appError('Your token is expired. Please login again', 401);
+};
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -56,6 +64,12 @@ module.exports = (err, req, res, next) => {
     }
     if (err.name === 'ValidationError') {
       error = handleValidationErrorDB(error);
+    }
+    if (err.name === 'JsonWebTokenError') {
+      error = handlejsonwebtokenerror(error);
+    }
+    if (err.name === 'TokenExpiredError') {
+      error = handletokenexpirederror(error);
     }
     senderrorforprod(error, res);
   }
