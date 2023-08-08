@@ -36,6 +36,9 @@ const userSchema = new mongoose.Schema({
       message: 'Password and Password confirm does not match',
     },
   },
+  passwordChangedAt: {
+    type: Date,
+  },
 });
 // this middle ware function is used to encrypt the password before saving it into the database
 userSchema.pre('save', async function (next) {
@@ -54,6 +57,17 @@ userSchema.methods.correctPassword = async function (
   userpassword
 ) {
   return await bcrypt.compare(candidatepassword, userpassword);
+};
+// This instance method is used to check whether the user changed its password or not and that could help to avoid using the expired jwt token
+userSchema.methods.changedPasswordAfter = async function (jwttimestamp) {
+  if (this.passwordChangedAt) {
+    const changedtimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return jwttimestamp < changedtimestamp;
+  }
+  return false;
 };
 const User = mongoose.model('User', userSchema);
 module.exports = User;
