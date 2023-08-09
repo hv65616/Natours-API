@@ -15,6 +15,7 @@ const signup = catchasync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   });
   // JWT Auth token created which is using id of the user and later storing that token into the database. The below created jwt token does not store id into its token
   const payload = { id: newuser._id };
@@ -91,4 +92,16 @@ const protect = catchasync(async (req, res, next) => {
   req.user = freshuser;
   next();
 });
-module.exports = { signup, login, protect };
+
+// This restrictto middleware is responsible to first the check the role of the user before deleting any tour
+const restrictto = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new apperror('You do not have permission to perform the action', 403)
+      );
+    }
+    next();
+  };
+};
+module.exports = { signup, login, protect, restrictto };
