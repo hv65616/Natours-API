@@ -58,8 +58,8 @@ userSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(candidatepassword, userpassword);
 };
-// This instance method is used to check whether the user changed its password or not and that could help to avoid using the expired jwt token
-userSchema.methods.changedPasswordAfter = async function (jwttimestamp) {
+// This instance method is used to check whether the user changed its password or not and that could help to avoid using the expired jwt token and it will not be async
+userSchema.methods.changedPasswordAfter = function (jwttimestamp) {
   if (this.passwordChangedAt) {
     const changedtimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
