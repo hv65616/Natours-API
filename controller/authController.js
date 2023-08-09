@@ -14,6 +14,7 @@ const signup = catchasync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt,
   });
   // JWT Auth token created which is using id of the user and later storing that token into the database. The below created jwt token does not store id into its token
   const payload = { id: newuser._id };
@@ -46,7 +47,8 @@ const login = catchasync(async (req, res, next) => {
     return next(new apperror('Incorrect email or password', 401));
   }
   // otherwise if all is right it will generate a webtoken and then output success and below code execute
-  const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, {
+  const payload = { id: user._id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   res.status(200).json({
