@@ -7,6 +7,10 @@ const authcontroller = require('../controller/authController');
 userrouter.post('/signup', authcontroller.signup);
 // route for login
 userrouter.post('/login', authcontroller.login);
+// route for forgot password
+userrouter.post('/forgotpassword', authcontroller.forgotpassword);
+// route for reset password
+userrouter.post('resetpassword', authcontroller.resetpassword);
 // route for getallusers and createusers
 userrouter
   .route('/')
