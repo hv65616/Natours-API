@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -18,9 +19,9 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
-  role:{
+  role: {
     type: String,
-    enum: ['user','guide','leadguide','admin'],
+    enum: ['user', 'guide', 'leadguide', 'admin'],
     default: 'user',
   },
   password: {
@@ -42,6 +43,14 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: {
+    type: Date,
+  },
+  // This store the password reset token
+  passwordResetToken: {
+    type: String,
+  },
+  // And this store the password reset expires
+  passwordResetExpires: {
     type: Date,
   },
 });
@@ -73,6 +82,17 @@ userSchema.methods.changedPasswordAfter = function (jwttimestamp) {
     return jwttimestamp < changedtimestamp;
   }
   return false;
+};
+// This instance method is responsible for generating a password reset token and then transfer that to forget password endpoint and from there it get saved into the database
+userSchema.methods.createpasswordresettoken = function () {
+  const resettoken = crypto.randomBytes(16).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resettoken)
+    .digest('hex');
+  console.log({resettoken}, this.passwordResetToken);
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resettoken;
 };
 const User = mongoose.model('User', userSchema);
 module.exports = User;
