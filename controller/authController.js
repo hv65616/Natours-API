@@ -5,6 +5,7 @@ const catchasync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const apperror = require('../utils/appError');
 const { promisify } = require('util');
+const sendEmail = require('../utils/email');
 // the below signup route implementation is for when new user signup
 const signup = catchasync(async (req, res, next) => {
   // This piece of code is wrong as it store all the data and anyone can access the data by registerign themselves as admin
@@ -119,10 +120,40 @@ const forgotpassword = catchasync(async (req, res, next) => {
   const resettoken = user.createpasswordresettoken();
   await user.save({ validateBeforeSave: false });
   // sent it to the user email
+  const reseturl = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/user/resetpassword/${resettoken}`;
+  const message = `Forgot your password? Submit a patch request with you rnew password and password confirm to: ${reseturl}. \nIf you didn't forget your password please ignore this email`;
+
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: 'Your password reset token (valid for 10 min)',
+      message,
+    });
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email',
+    });
+  } catch (error) {
+    console.log(error);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(
+      new apperror('There was an error sending the email. Try again later',500)
+    );
+  }
 });
 
 // This is for reset password endpoint
-const resetpassword = (req, res, next) => {};
+const resetpassword = (req, res, next) => {
+  // Get user based on the token
+  
+  // If token has not expired and there is user set the new password
+  // Update changePasswordAt property for the user
+  // Log the user in send JWT
+};
 module.exports = {
   signup,
   login,
