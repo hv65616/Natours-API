@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const apperror = require('../utils/appError');
 const { promisify } = require('util');
 const sendEmail = require('../utils/email');
+const crypto = require('crypto');
 // the below signup route implementation is for when new user signup
 const signup = catchasync(async (req, res, next) => {
   // This piece of code is wrong as it store all the data and anyone can access the data by registerign themselves as admin
@@ -120,6 +121,7 @@ const forgotpassword = catchasync(async (req, res, next) => {
   const resettoken = user.createpasswordresettoken();
   await user.save({ validateBeforeSave: false });
   // sent it to the user email
+  /*
   const reseturl = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/user/resetpassword/${resettoken}`;
@@ -141,19 +143,46 @@ const forgotpassword = catchasync(async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(
-      new apperror('There was an error sending the email. Try again later',500)
+      new apperror('There was an error sending the email. Try again later', 500)
     );
   }
+  */
 });
 
 // This is for reset password endpoint
-const resetpassword = (req, res, next) => {
+const resetpassword = catchasync(async (req, res, next) => {
   // Get user based on the token
-  
+  // console.log(req.params.token);
+  const hasedtoken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+  // console.log(hasedtoken);
+  const user = await User.findOne({
+    passwordResetToken: req.params.token,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  // console.log(user);
   // If token has not expired and there is user set the new password
+  if (!user) {
+    return next(new apperror('Token is invalid or has expired', 400));
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
   // Update changePasswordAt property for the user
   // Log the user in send JWT
-};
+  const payload = { id: user._id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+});
 module.exports = {
   signup,
   login,
