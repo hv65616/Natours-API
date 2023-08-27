@@ -64,6 +64,12 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+// this middleware function is used to update the password changed at when ever user changes the password
+userSchema.pre('save', async function (next) {
+  if(!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now()-1000;
+  next();
+});
 // Instance method - it is a method that will be available in all documents of a certain collection
 // this instance method is for checking the entered password and stored password are same and correct
 userSchema.methods.correctPassword = async function (
@@ -85,12 +91,12 @@ userSchema.methods.changedPasswordAfter = function (jwttimestamp) {
 };
 // This instance method is responsible for generating a password reset token and then transfer that to forget password endpoint and from there it get saved into the database
 userSchema.methods.createpasswordresettoken = function () {
-  const resettoken = crypto.randomBytes(16).toString('hex');
+  const resettoken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resettoken)
     .digest('hex');
-  console.log({resettoken}, this.passwordResetToken);
+  console.log({ resettoken }, this.passwordResetToken);
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resettoken;
 };
