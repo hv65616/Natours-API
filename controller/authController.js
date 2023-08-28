@@ -183,6 +183,55 @@ const resetpassword = catchasync(async (req, res, next) => {
     token,
   });
 });
+
+// This is a route for update password
+const updatepassword = catchasync(async (req, res, next) => {
+  // Get user from collection
+  // console.log(5);
+  console.log(req.body.id);
+  const user = await User.findById(req.body.id).select('+password');
+  console.log(user);
+  // Check if posted password is correct
+  // console.log(1);
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new apperror('Your current password is wrong',401));
+  }
+  console.log(2);
+  // If so then update the password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  // Log user in send JWT
+  const payload = { id: user._id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+});
+
+
+// const updatepassword = catchasync(async (req, res, next) => {
+//   const { email, oldpassword, newpassword, newpasswordconfirm } = req.body;
+//   const user = await User.findOne({ email }).select('+password').exec();
+//   console.log(user);
+//   if (!user || (await user.correctPassword(oldpassword, user.password))) {
+//     return next(new apperror('Incorrect Password'), 400);
+//   }
+//   user.password = newpassword;
+//   user.passwordConfirm = newpasswordconfirm;
+//   await user.save();
+//   const payload = { id: user._id };
+//   const token = jwt.sign(payload, process.env.JWT_SECRET, {
+//     expiresIn: process.env.JWT_EXPIRES_IN,
+//   });
+//   res.status(200).json({
+//     status: 'success',
+//     token,
+//   });
+// });
 module.exports = {
   signup,
   login,
@@ -190,4 +239,5 @@ module.exports = {
   restrictto,
   forgotpassword,
   resetpassword,
+  updatepassword,
 };
