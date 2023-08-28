@@ -11,6 +11,12 @@ userrouter.post('/login', authcontroller.login);
 userrouter.post('/forgotpassword', authcontroller.forgotpassword);
 // route for reset password
 userrouter.patch('/resetpassword/:token', authcontroller.resetpassword);
+// route for updating password
+userrouter.patch(
+  '/updatemypassword',
+  authcontroller.protect,
+  authcontroller.updatepassword
+);
 // route for getallusers and createusers
 userrouter
   .route('/')
