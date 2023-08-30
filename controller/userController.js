@@ -46,6 +46,16 @@ const updateMe = catchasync(async (req, res, next) => {
     },
   });
 });
+
+// deleting the current user
+const deleteMe = catchasync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: 'success',
+    message: 'Account deleted(inactive) successfully',
+    data: null,
+  });
+});
 const creatuser = (req, res) => {
   res
     .status(500)
@@ -76,4 +86,5 @@ module.exports = {
   updateuser,
   deleteuser,
   updateMe,
+  deleteMe,
 };
