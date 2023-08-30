@@ -19,7 +19,8 @@ userrouter.patch(
 );
 // route for updating the user details apart from password
 userrouter.patch('/updateMe', authcontroller.protect, usercontroller.updateMe);
-
+// route for deleting the user i.e marking it as inactive
+userrouter.delete('/deleteMe', authcontroller.protect, usercontroller.deleteMe);
 // route for getallusers and createusers
 userrouter
   .route('/')
