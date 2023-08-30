@@ -17,6 +17,9 @@ userrouter.patch(
   authcontroller.protect,
   authcontroller.updatepassword
 );
+// route for updating the user details apart from password
+userrouter.patch('/updateMe', authcontroller.protect, usercontroller.updateMe);
+
 // route for getallusers and createusers
 userrouter
   .route('/')
