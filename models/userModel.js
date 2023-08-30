@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: {
     type: Date,
   },
+  // set the account property is active or not which help in deactivating or deleting account
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 // this middle ware function is used to encrypt the password before saving it into the database
 userSchema.pre('save', async function (next) {
@@ -66,8 +72,14 @@ userSchema.pre('save', async function (next) {
 });
 // this middleware function is used to update the password changed at when ever user changes the password
 userSchema.pre('save', async function (next) {
-  if(!this.isModified('password') || this.isNew) return next();
-  this.passwordChangedAt = Date.now()-1000;
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+// this middleware runs on all the function that start with find when quering in database and then return all the account which are active
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
   next();
 });
 // Instance method - it is a method that will be available in all documents of a certain collection
