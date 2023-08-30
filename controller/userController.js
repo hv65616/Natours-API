@@ -1,5 +1,14 @@
 const catchasync = require('../utils/catchAsync');
 const User = require('../models/userModel');
+const apperror = require('../utils/appError');
+// this function is used to filter the data passed as req.body ans only consider those fields which are part of allowed fields it is pure javascript not nodejs
+const filterObj = (obj, ...allowedfields) => {
+  const newobject = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedfields.includes(el)) newobject[el] = obj[el];
+  });
+  return newobject;
+};
 // getallusers route functionality implemented
 const getallusers = catchasync(async (req, res, next) => {
   const users = await User.find();
@@ -12,6 +21,31 @@ const getallusers = catchasync(async (req, res, next) => {
   });
 });
 
+// updating the details of the user
+const updateMe = catchasync(async (req, res, next) => {
+  // create error if user try to update password
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new apperror(
+        'This route if not for password updates.Please use /updatemypassowrd',
+        400
+      )
+    );
+  }
+  // filtered out unwanted field names that are not allowed
+  const filteredbody = filterObj(req.body, 'name', 'email');
+  // update user document
+  const userupdated = await User.findByIdAndUpdate(req.user.id, filteredbody, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: userupdated,
+    },
+  });
+});
 const creatuser = (req, res) => {
   res
     .status(500)
@@ -35,4 +69,11 @@ const deleteuser = (req, res) => {
     .status(500)
     .json({ status: 'error', message: 'this route is not yet definded' });
 };
-module.exports = { getallusers, creatuser, getuser, updateuser, deleteuser };
+module.exports = {
+  getallusers,
+  creatuser,
+  getuser,
+  updateuser,
+  deleteuser,
+  updateMe,
+};
