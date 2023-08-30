@@ -16,7 +16,7 @@ const signup = catchasync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt,
+    //passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
   });
   // JWT Auth token created which is using id of the user and later storing that token into the database. The below created jwt token does not store id into its token
