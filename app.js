@@ -4,12 +4,15 @@ const app = express();
 const morgan = require('morgan');
 // express-rate-limit is used for rate limiting for user to login
 const ratelimit = require('express-rate-limit');
+const helmet = require('helmet');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
 const apperror = require('./utils/appError');
 const errorController = require('./controller/errorController');
 console.log(process.env.NODE_ENV);
 // GLOBAL MIDDLEWARES
+// Security HTTP Headers
+app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
   app.use(morgan('dev'));
