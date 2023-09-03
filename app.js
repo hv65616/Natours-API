@@ -2,16 +2,26 @@ const express = require('express');
 const app = express();
 // morgan is an login dependency which is a 3rd party middleware
 const morgan = require('morgan');
+// express-rate-limit is used for rate limiting for user to login
+const ratelimit = require('express-rate-limit');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
 const apperror = require('./utils/appError');
 const errorController = require('./controller/errorController');
 console.log(process.env.NODE_ENV);
+// GLOBAL MIDDLEWARES
 if (process.env.NODE_ENV === 'development') {
   // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
   app.use(morgan('dev'));
 }
 
+// it take maximum request from an ip can take place , window size when limit exceed and a mesage and then apply this global middleware to the route
+const limiter = ratelimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many request from this IP, please try again in an hour',
+});
+app.use('/api', limiter);
 // this is a middleware
 app.use(express.json());
 
