@@ -24,6 +24,16 @@ const signup = catchasync(async (req, res, next) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+  // creating cookie and setting it as jwt
+  const cookieoptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieoptions.secure = true;
+  res.cookie('jwt', token, cookieoptions);
+  newuser.password = undefined;
   res.status(201).json({
     status: 'Success',
     token,
@@ -54,6 +64,15 @@ const login = catchasync(async (req, res, next) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+  // creating cookie and setting it as jwt
+  const cookieoptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieoptions.secure = true;
+  res.cookie('jwt', token, cookieoptions);
   res.status(200).json({
     status: 'success',
     token,
@@ -178,6 +197,15 @@ const resetpassword = catchasync(async (req, res, next) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+  // creating cookie and setting it as jwt
+  const cookieoptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieoptions.secure = true;
+  res.cookie('jwt', token, cookieoptions);
   res.status(200).json({
     status: 'success',
     token,
@@ -194,7 +222,7 @@ const updatepassword = catchasync(async (req, res, next) => {
   // Check if posted password is correct
   // console.log(1);
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new apperror('Your current password is wrong',401));
+    return next(new apperror('Your current password is wrong', 401));
   }
   console.log(2);
   // If so then update the password
@@ -206,12 +234,20 @@ const updatepassword = catchasync(async (req, res, next) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+  // creating cookie and setting it as jwt
+  const cookieoptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieoptions.secure = true;
+  res.cookie('jwt', token, cookieoptions);
   res.status(200).json({
     status: 'success',
     token,
   });
 });
-
 
 // const updatepassword = catchasync(async (req, res, next) => {
 //   const { email, oldpassword, newpassword, newpasswordconfirm } = req.body;
