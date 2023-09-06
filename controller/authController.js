@@ -76,8 +76,12 @@ const login = catchasync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     token,
+    data: {
+      user: user,
+    },
   });
 });
+
 
 // This middleware is used which allow user to first login then see all the tours available
 const protect = catchasync(async (req, res, next) => {
