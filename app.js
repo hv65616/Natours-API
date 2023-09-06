@@ -5,6 +5,10 @@ const morgan = require('morgan');
 // express-rate-limit is used for rate limiting for user to login
 const ratelimit = require('express-rate-limit');
 const helmet = require('helmet');
+// sanitize use for prevent nosql attack
+const mongosanitize = require('express-mongo-sanitize');
+// sanitize against xss
+const xss = require('xss-clean');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
 const apperror = require('./utils/appError');
@@ -27,7 +31,10 @@ const limiter = ratelimit({
 app.use('/api', limiter);
 // this is a middleware
 app.use(express.json());
-
+// data sanitization against nosql query injections
+app.use(mongosanitize());
+// data sanitization against xss
+app.use(xss());
 // custom middleware-1
 app.use((req, res, next) => {
   console.log('Custom Middleware');
