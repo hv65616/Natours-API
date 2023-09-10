@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const User = require('./userModel');
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -100,6 +101,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
   },
   {
     toJSON: { virtuals: true },
@@ -118,6 +120,12 @@ tourSchema.pre('save', function (next) {
   // console.log(this);
   // the slugify used here is used to extract name from the document that is being saved and store it seperate in scheme be defining seperate in schema
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+// this pre middleware is used for embedding the guides data from user model to tour model before saving any tour
+tourSchema.pre('save', async function (next) {
+  const guidespromises = this.guides.map(async (id) => await User.findById(id));
+  this.guides = await Promise.all(guidespromises);
   next();
 });
 
