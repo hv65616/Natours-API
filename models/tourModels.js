@@ -158,6 +158,14 @@ tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   next();
 });
+// this query middleware is used to populate the guides whose reference stored in tour schema along with that it deselect the parameters passed in select option
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
 tourSchema.post(/^find/, function (docs, next) {
   // console.log(docs);
   next();
