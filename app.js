@@ -11,6 +11,7 @@ const mongosanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
+const reviewrouter = require('./routes/reviewRoutes');
 const apperror = require('./utils/appError');
 const errorController = require('./controller/errorController');
 console.log(process.env.NODE_ENV);
@@ -52,6 +53,9 @@ app.use('/api/v1/tours', toursrouter);
 
 // including the router for the users
 app.use('/api/v1/user', userrouter);
+
+// including the router for the reviews
+app.use('/api/v1/reviews', reviewrouter);
 
 // route for all invalid request and should always put atlast
 app.all('*', (req, res, next) => {
