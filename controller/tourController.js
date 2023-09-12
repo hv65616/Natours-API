@@ -80,7 +80,8 @@ const createnewtour = catchasync(async (req, res, next) => {
 // similary we have done for the post request
 const getaparticulartour = catchasync(async (req, res, next) => {
   // req.params - it will access the value that the user is passing as a argument
-  const singletour = await Tour.findById(req.params.id);
+  // and also populate the reviews that are associated with it
+  const singletour = await Tour.findById(req.params.id).populate('reviews');
   if (!singletour) {
     return next(new appError('No tour found with that ID', 404));
   }
