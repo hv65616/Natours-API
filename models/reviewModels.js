@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModels');
 const reviewSchema = new mongoose.Schema(
   {
     review: {
@@ -32,5 +33,17 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// populating the data of tour and user in the review by parent referencing -
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'tour',
+    select: 'name',
+  }).populate({
+    path: 'user',
+    select: 'name photo',
+  });
+  next();
+});
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;
