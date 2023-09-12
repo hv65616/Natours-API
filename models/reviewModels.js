@@ -35,11 +35,20 @@ const reviewSchema = new mongoose.Schema(
 );
 
 // populating the data of tour and user in the review by parent referencing -
+// reviewSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'tour',
+//     select: 'name',
+//   }).populate({
+//     path: 'user',
+//     select: 'name photo',
+//   });
+//   next();
+// });
+
+// populating the data of user only as we are using virtaul populate also child referencing
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
-    path: 'tour',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'name photo',
   });
