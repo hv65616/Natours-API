@@ -120,6 +120,13 @@ tourSchema.virtual('durationweeks').get(function () {
   return this.duration / 7;
 });
 
+// this virtual populate, populate the reviews with out any taking extra memory
+// it have 3 things specified ref i.e to whom we are refering , foreign field that will be accorind to the referencing and local field that will belogn to locally
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
 // document middleware : runs before the save command and create command
 // the pre middleware used to execite before we save any document of save command execute
 tourSchema.pre('save', function (next) {
