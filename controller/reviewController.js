@@ -12,6 +12,9 @@ const getallreviews = catchasync(async (req, res, next) => {
 });
 
 const createreviews = catchasync(async (req, res, next) => {
+  // Allow nested routes
+  if (!req.body.tour) req.body.tour = req.params.tourid;
+  if (!req.body.user) req.body.user = req.user._id;
   const newreview = await Review.create(req.body);
   res.status(201).json({
     status: 'success',
