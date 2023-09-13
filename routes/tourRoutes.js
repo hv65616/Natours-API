@@ -2,6 +2,7 @@ const express = require('express');
 const toursrouter = express.Router();
 const tourcontroller = require('../controller/tourController');
 const authcontroller = require('../controller/authController');
+const reviewcontroller = require('../controller/reviewController');
 // param midlleware
 // toursrouter.param('id', tourcontroller.checkid);
 
@@ -25,5 +26,13 @@ toursrouter
     authcontroller.protect,
     authcontroller.restrictto('admin', 'leadguide'),
     tourcontroller.deletetour
+  );
+// this is a nested route as create reviews route is used inside tour router
+toursrouter
+  .route('/:tourid/reviews')
+  .post(
+    authcontroller.protect,
+    authcontroller.restrictto('user'),
+    reviewcontroller.createreviews
   );
 module.exports = toursrouter;
