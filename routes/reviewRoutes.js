@@ -1,5 +1,6 @@
 const express = require('express');
-const reviewrouter = express.Router();
+// merge params is used to merge or use the params pass in another route to in its route
+const reviewrouter = express.Router({ mergeParams: true });
 const reviewcontroller = require('../controller/reviewController');
 const authcontroller = require('../controller/authController');
 reviewrouter
