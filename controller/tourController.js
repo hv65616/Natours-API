@@ -7,6 +7,7 @@ const Tour = require('../models/tourModels');
 const apifeatures = require('../utils/apiFeatures.js');
 const catchasync = require('../utils/catchAsync');
 const appError = require('../utils/appError');
+const factory = require('./handlerFactory');
 // created a middleware for functioning of endpoint named as top-5-cheaptours and in this middle ware we are passing default values for limit sort and fields
 const aliastoptours = (req, res, next) => {
   req.query.limit = '5';
@@ -114,17 +115,20 @@ const updatetour = catchasync(async (req, res, next) => {
   res.status(200).json({ status: 'success', data: tourupdate });
 });
 
-const deletetour = catchasync(async (req, res, next) => {
-  const tourdelete = await Tour.findByIdAndDelete(req.params.id);
-  if (!tourdelete) {
-    return next(new appError('No tour with that ID exist', 404));
-  }
-  res.status(204).json({
-    status: 'success',
-    data: tourdelete,
-    message: 'Particular tour has been successfully deleted',
-  });
-});
+// const deletetour = catchasync(async (req, res, next) => {
+//   const tourdelete = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tourdelete) {
+//     return next(new appError('No tour with that ID exist', 404));
+//   }
+//   res.status(204).json({
+//     status: 'success',
+//     data: tourdelete,
+//     message: 'Particular tour has been successfully deleted',
+//   });
+// });
+
+// the above delete tour code is commented and below handler fucntion delete tour is implemented
+const deletetour = factory.deleteone(Tour);
 
 // Implementing aggregation pipeline
 const gettourstats = catchasync(async (req, res, next) => {
