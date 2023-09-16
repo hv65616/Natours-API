@@ -1,6 +1,7 @@
 const catchasync = require('../utils/catchAsync');
 const User = require('../models/userModel');
 const apperror = require('../utils/appError');
+const factory = require('./handlerFactory');
 // this function is used to filter the data passed as req.body ans only consider those fields which are part of allowed fields it is pure javascript not nodejs
 const filterObj = (obj, ...allowedfields) => {
   const newobject = {};
@@ -74,11 +75,8 @@ const updateuser = (req, res) => {
     .json({ status: 'error', message: 'this route is not yet definded' });
 };
 
-const deleteuser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: 'error', message: 'this route is not yet definded' });
-};
+// delete user is implemented using factory handler
+const deleteuser = factory.deleteone(User);
 module.exports = {
   getallusers,
   creatuser,
