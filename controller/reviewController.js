@@ -1,5 +1,6 @@
 const Review = require('../models/reviewModels');
 const catchasync = require('../utils/catchAsync');
+const factory = require('./handlerFactory');
 const getallreviews = catchasync(async (req, res, next) => {
   let filter = {};
   if (req.params.tourid) filter = { tour: req.params.tourid };
@@ -25,4 +26,6 @@ const createreviews = catchasync(async (req, res, next) => {
     },
   });
 });
-module.exports = { getallreviews, createreviews };
+// delete review with handler function
+const deletereview = factory.deleteone(Review);
+module.exports = { getallreviews, createreviews, deletereview };
