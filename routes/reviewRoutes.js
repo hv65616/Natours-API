@@ -11,4 +11,5 @@ reviewrouter
     authcontroller.restrictto('user'),
     reviewcontroller.createreviews
   );
+reviewrouter.route('/:id').delete(reviewcontroller.deletereview);
 module.exports = reviewrouter;
