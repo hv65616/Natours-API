@@ -69,11 +69,8 @@ const getuser = (req, res) => {
     .json({ status: 'error', message: 'this route is not yet definded' });
 };
 
-const updateuser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: 'error', message: 'this route is not yet definded' });
-};
+// update user is implemented using factory handler
+const updateuser = factory.updateone(User);
 
 // delete user is implemented using factory handler
 const deleteuser = factory.deleteone(User);
