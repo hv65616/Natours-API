@@ -68,15 +68,18 @@ const getalltours = catchasync(async (req, res, next) => {
   });
 });
 
-const createnewtour = catchasync(async (req, res, next) => {
-  const newtour = await Tour.create(req.body);
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: newtour,
-    },
-  });
-});
+// const createnewtour = catchasync(async (req, res, next) => {
+//   const newtour = await Tour.create(req.body);
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour: newtour,
+//     },
+//   });
+// });
+
+// the above create tour code is commented and below handler fucntion create tour is implemented
+const createnewtour = factory.createone(Tour);
 
 // similary we have done for the post request
 const getaparticulartour = catchasync(async (req, res, next) => {
@@ -104,16 +107,19 @@ const getaparticulartour = catchasync(async (req, res, next) => {
   // });
 });
 
-const updatetour = catchasync(async (req, res, next) => {
-  const tourupdate = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!tourupdate) {
-    return next(new appError('No tour with that ID exist', 404));
-  }
-  res.status(200).json({ status: 'success', data: tourupdate });
-});
+// const updatetour = catchasync(async (req, res, next) => {
+//   const tourupdate = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true,
+//     runValidators: true,
+//   });
+//   if (!tourupdate) {
+//     return next(new appError('No tour with that ID exist', 404));
+//   }
+//   res.status(200).json({ status: 'success', data: tourupdate });
+// });
+
+// the above update tour code is commented and below handler fucntion update tour is implemented
+const updatetour = factory.updateone(Tour);
 
 // const deletetour = catchasync(async (req, res, next) => {
 //   const tourdelete = await Tour.findByIdAndDelete(req.params.id);
