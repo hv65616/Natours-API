@@ -14,4 +14,27 @@ const deleteone = (Model) =>
       message: 'Particular document has been successfully deleted',
     });
   });
-module.exports = { deleteone };
+
+const updateone = (Model) =>
+  catchasync(async (req, res, next) => {
+    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!doc) {
+      return next(new appError('No tour with that ID exist', 404));
+    }
+    res.status(200).json({ status: 'success', data: doc });
+  });
+
+const createone = (Model) =>
+  catchasync(async (req, res, next) => {
+    const doc = await Model.create(req.body);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: doc,
+      },
+    });
+  });
+module.exports = { deleteone, updateone, createone };
