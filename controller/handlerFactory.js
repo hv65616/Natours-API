@@ -37,4 +37,23 @@ const createone = (Model) =>
       },
     });
   });
-module.exports = { deleteone, updateone, createone };
+
+const getone = (Model, popOptions) =>
+  catchasync(async (req, res, next) => {
+    // first we model the query and if query consist some result then
+    let query = Model.findById(req.params.id);
+    // then it populate it with the popoptions
+    if (popOptions) query = query.populate(popOptions);
+    // and at last await the query to get it resolved 
+    const doc = await query;
+    if (!doc) {
+      return next(new appError('No document found with that ID', 404));
+    }
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: doc,
+      },
+    });
+  });
+module.exports = { deleteone, updateone, createone, getone };
