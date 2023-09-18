@@ -13,6 +13,7 @@ reviewrouter
   );
 reviewrouter
   .route('/:id')
+  .get(reviewcontroller.getreview)
   .patch(reviewcontroller.updatereview)
   .delete(reviewcontroller.deletereview);
 module.exports = reviewrouter;
