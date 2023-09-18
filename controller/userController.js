@@ -10,6 +10,12 @@ const filterObj = (obj, ...allowedfields) => {
   });
   return newobject;
 };
+
+// getme middleware created
+const getme = (req,res,next)=>{
+  req.params.id = req.user.id;
+  next()
+}
 // getallusers route functionality implemented
 const getallusers = catchasync(async (req, res, next) => {
   const users = await User.find();
@@ -79,6 +85,7 @@ const updateuser = factory.updateone(User);
 // delete user is implemented using factory handler
 const deleteuser = factory.deleteone(User);
 module.exports = {
+  getme,
   getallusers,
   creatuser,
   getuser,
