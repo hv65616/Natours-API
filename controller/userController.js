@@ -58,16 +58,20 @@ const deleteMe = catchasync(async (req, res, next) => {
   });
 });
 const creatuser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: 'error', message: 'this route is not yet definded' });
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet definded. Please use /signup instead',
+  });
 };
 
-const getuser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: 'error', message: 'this route is not yet definded' });
-};
+// const getuser = (req, res) => {
+//   res
+//     .status(500)
+//     .json({ status: 'error', message: 'this route is not yet definded' });
+// };
+
+// the above get user code is commented and below handler fucntion of get user is implemented
+const getuser = factory.getone(User);
 
 // update user is implemented using factory handler
 const updateuser = factory.updateone(User);
