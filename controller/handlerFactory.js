@@ -33,7 +33,7 @@ const createone = (Model) =>
     res.status(200).json({
       status: 'success',
       data: {
-        tour: doc,
+        doc,
       },
     });
   });
@@ -44,7 +44,7 @@ const getone = (Model, popOptions) =>
     let query = Model.findById(req.params.id);
     // then it populate it with the popoptions
     if (popOptions) query = query.populate(popOptions);
-    // and at last await the query to get it resolved 
+    // and at last await the query to get it resolved
     const doc = await query;
     if (!doc) {
       return next(new appError('No document found with that ID', 404));
@@ -52,7 +52,7 @@ const getone = (Model, popOptions) =>
     res.status(200).json({
       status: 'success',
       data: {
-        tour: doc,
+        doc,
       },
     });
   });
