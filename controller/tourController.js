@@ -82,30 +82,33 @@ const getalltours = catchasync(async (req, res, next) => {
 const createnewtour = factory.createone(Tour);
 
 // similary we have done for the post request
-const getaparticulartour = catchasync(async (req, res, next) => {
-  // req.params - it will access the value that the user is passing as a argument
-  // and also populate the reviews that are associated with it
-  const singletour = await Tour.findById(req.params.id).populate('reviews');
-  if (!singletour) {
-    return next(new appError('No tour found with that ID', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: singletour,
-    },
-  });
-  // const tour = tours.find((el) => el.id == id);
-  // if (id > tours.length) {
-  //   return res.status(404).json({ status: 'faild', message: 'invalid id' });
-  // }
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour,
-  //   },
-  // });
-});
+// const getaparticulartour = catchasync(async (req, res, next) => {
+//   // req.params - it will access the value that the user is passing as a argument
+//   // and also populate the reviews that are associated with it
+//   const singletour = await Tour.findById(req.params.id).populate('reviews');
+//   if (!singletour) {
+//     return next(new appError('No tour found with that ID', 404));
+//   }
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour: singletour,
+//     },
+//   });
+// const tour = tours.find((el) => el.id == id);
+// if (id > tours.length) {
+//   return res.status(404).json({ status: 'faild', message: 'invalid id' });
+// }
+// res.status(200).json({
+//   status: 'success',
+//   data: {
+//     tour,
+//   },
+// });
+// });
+
+// the above get particular tour code is commented and below handler fucntion of get particular tour is implemented
+const getaparticulartour = factory.getone(Tour, { path: 'reviews' });
 
 // const updatetour = catchasync(async (req, res, next) => {
 //   const tourupdate = await Tour.findByIdAndUpdate(req.params.id, req.body, {
