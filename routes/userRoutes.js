@@ -17,6 +17,13 @@ userrouter.patch(
   authcontroller.protect,
   authcontroller.updatepassword
 );
+
+userrouter.get(
+  '/me',
+  authcontroller.protect,
+  usercontroller.getme,
+  usercontroller.getuser
+);
 // route for updating the user details apart from password
 userrouter.patch('/updateMe', authcontroller.protect, usercontroller.updateMe);
 // route for deleting the user i.e marking it as inactive
