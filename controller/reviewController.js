@@ -30,4 +30,12 @@ const createreviews = catchasync(async (req, res, next) => {
 const deletereview = factory.deleteone(Review);
 // update review with handler function
 const updatereview = factory.updateone(Review);
-module.exports = { getallreviews, createreviews, deletereview, updatereview };
+// get review with handler function
+const getreview = factory.getone(Review);
+module.exports = {
+  getallreviews,
+  createreviews,
+  deletereview,
+  updatereview,
+  getreview,
+};
