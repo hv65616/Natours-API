@@ -5,7 +5,7 @@ const reviewcontroller = require('../controller/reviewController');
 const authcontroller = require('../controller/authController');
 reviewrouter
   .route('/')
-  .get(reviewcontroller.getallreviews)
+  .get(authcontroller.protect, reviewcontroller.getallreviews)
   .post(
     authcontroller.protect,
     authcontroller.restrictto('user'),
@@ -13,7 +13,15 @@ reviewrouter
   );
 reviewrouter
   .route('/:id')
-  .get(reviewcontroller.getreview)
-  .patch(reviewcontroller.updatereview)
-  .delete(reviewcontroller.deletereview);
+  .get(authcontroller.protect, reviewcontroller.getreview)
+  .patch(
+    authcontroller.protect,
+    authcontroller.restrictto('user', 'admin'),
+    reviewcontroller.updatereview
+  )
+  .delete(
+    authcontroller.protect,
+    authcontroller.restrictto('user', 'admin'),
+    reviewcontroller.deletereview
+  );
 module.exports = reviewrouter;
