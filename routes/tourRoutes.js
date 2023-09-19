@@ -12,16 +12,30 @@ toursrouter
   .route('/top-5-cheaptours')
   .get(tourcontroller.aliastoptours, tourcontroller.getalltours);
 toursrouter.route('/tour-stats').get(tourcontroller.gettourstats);
-toursrouter.route('/monthly-plan/:year').get(tourcontroller.getmonthlyplans);
+toursrouter
+  .route('/monthly-plan/:year')
+  .get(
+    authcontroller.protect,
+    authcontroller.restrictto('admin', 'leadguide', 'guide'),
+    tourcontroller.getmonthlyplans
+  );
 toursrouter
   .route('/')
   // protect middleware to make user login before and check user before getting all tours
-  .get(authcontroller.protect, tourcontroller.getalltours)
-  .post(tourcontroller.createnewtour);
+  .get(tourcontroller.getalltours)
+  .post(
+    authcontroller.protect,
+    authcontroller.restrictto('admin', 'leadguide'),
+    tourcontroller.createnewtour
+  );
 toursrouter
   .route('/:id')
   .get(tourcontroller.getaparticulartour)
-  .patch(tourcontroller.updatetour)
+  .patch(
+    authcontroller.protect,
+    authcontroller.restrictto('admin', 'leadguide'),
+    tourcontroller.updatetour
+  )
   // restrictto middleware to check the role of user before deleting the tour
   .delete(
     authcontroller.protect,
