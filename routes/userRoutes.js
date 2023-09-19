@@ -31,12 +31,20 @@ userrouter.delete('/deleteMe', authcontroller.protect, usercontroller.deleteMe);
 // route for getallusers and createusers
 userrouter
   .route('/')
-  .get(usercontroller.getallusers)
-  .post(usercontroller.creatuser);
+  .get(
+    authcontroller.protect,
+    authcontroller.restrictto('admin'),
+    usercontroller.getallusers
+  )
+  .post(
+    authcontroller.protect,
+    authcontroller.restrictto('admin'),
+    usercontroller.creatuser
+  );
 // route for particular user,update user and delete user
 userrouter
   .route('/:id')
-  .get(usercontroller.getuser)
-  .patch(usercontroller.updateuser)
-  .delete(usercontroller.deleteuser);
+  .get(authcontroller.protect, usercontroller.getuser)
+  .patch(authcontroller.protect, usercontroller.updateuser)
+  .delete(authcontroller.protect, usercontroller.deleteuser);
 module.exports = userrouter;
