@@ -114,6 +114,12 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// indexing on tour schema will align data according to that price=1 means arrange data in decreasing price 
+// This will reduce the search time as data become sorted
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // Here we define the virtual properties to calculating weeks by using duration in number of days
 // Virtual properties is used when we can drive anything from anything so as to save space and also we cannot pass this in query as this is not a part of query schema and not present in database
 tourSchema.virtual('durationweeks').get(function () {
