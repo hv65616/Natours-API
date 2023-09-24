@@ -54,5 +54,32 @@ reviewSchema.pre(/^find/, function (next) {
   });
   next();
 });
+
+// calcAverageRating is a middleware that is used to calculate the averahe rating on a particular tour and then update the rating
+reviewSchema.statics.calcAverageRatings = async function (tourid) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourid },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  await Tour.findByIdAndUpdate(tourid, {
+    ratingsQuantity: stats[0].nRating,
+    ratingsAverage: stats[0].avgRating,
+  });
+  console.log(stats);
+};
+
+reviewSchema.pre('save', function (next) {
+  // this point to current review
+  this.constructor.calcAverageRatings(this.tour);
+  next();
+});
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;
