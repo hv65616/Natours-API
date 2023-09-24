@@ -69,11 +69,20 @@ reviewSchema.statics.calcAverageRatings = async function (tourid) {
       },
     },
   ]);
-  await Tour.findByIdAndUpdate(tourid, {
-    ratingsQuantity: stats[0].nRating,
-    ratingsAverage: stats[0].avgRating,
-  });
-  console.log(stats);
+  // check if there are no review record are present or present
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourid, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourid, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+
+  // console.log(stats);
 };
 
 reviewSchema.pre('save', function (next) {
@@ -81,5 +90,16 @@ reviewSchema.pre('save', function (next) {
   this.constructor.calcAverageRatings(this.tour);
   next();
 });
+
+// this middleware is used to find a review , update it or delete it
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.findOne();
+  // console.log(this.r);
+  next();
+});
+reviewSchema.post(/^findOneAnd/, async function () {
+  await this.r.constructor.calcAverageRatings(this.r.tour);
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;
