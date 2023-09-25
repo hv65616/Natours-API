@@ -34,6 +34,8 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// index is a way to not allow to store duplicate reviews on a particular tour as here it checks tour and user id both must be unique
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 // populating the data of tour and user in the review by parent referencing -
 // reviewSchema.pre(/^find/, function (next) {
 //   this.populate({
