@@ -35,6 +35,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
+      set: (val) => Math.round(val*10)/10,
     },
     ratingsQuantity: {
       type: Number,
@@ -115,7 +116,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-// indexing on tour schema will align data according to that price=1 means arrange data in decreasing price 
+// indexing on tour schema will align data according to that price=1 means arrange data in decreasing price
 // This will reduce the search time as data become sorted
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
