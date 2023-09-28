@@ -23,7 +23,10 @@ toursrouter
 toursrouter
   .route('/tours-within/:distance/center/:latlng/unit/:unit')
   .get(tourcontroller.gettourswithin);
-
+// this route is responsible for calculating the distance of all tours from a given point
+toursrouter
+  .route('/distance/:latlng/unit/:unit')
+  .get(tourcontroller.getdistance);
 toursrouter
   .route('/')
   // protect middleware to make user login before and check user before getting all tours
