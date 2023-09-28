@@ -216,6 +216,30 @@ const getmonthlyplans = catchasync(async (req, res, next) => {
   });
 });
 
+const gettourswithin = catchasync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  if (!lat || !lng) {
+    next(
+      new appError(
+        'Please provide latitude and longitude in the format lat,lng.',
+        400
+      )
+    );
+  }
+  // converting the distance into radians
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+  console.log(distance, lat, lng, unit);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tours,
+    },
+  });
+});
 module.exports = {
   getalltours,
   createnewtour,
@@ -225,6 +249,7 @@ module.exports = {
   aliastoptours,
   gettourstats,
   getmonthlyplans,
+  gettourswithin,
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
