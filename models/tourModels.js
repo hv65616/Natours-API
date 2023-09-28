@@ -35,7 +35,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
-      set: (val) => Math.round(val*10)/10,
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
@@ -120,6 +120,7 @@ const tourSchema = new mongoose.Schema(
 // This will reduce the search time as data become sorted
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // Here we define the virtual properties to calculating weeks by using duration in number of days
 // Virtual properties is used when we can drive anything from anything so as to save space and also we cannot pass this in query as this is not a part of query schema and not present in database
