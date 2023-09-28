@@ -216,6 +216,7 @@ const getmonthlyplans = catchasync(async (req, res, next) => {
   });
 });
 
+// Finding tours within a radius
 const gettourswithin = catchasync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
@@ -240,6 +241,45 @@ const gettourswithin = catchasync(async (req, res, next) => {
     },
   });
 });
+
+// Calculating the distances of all tours from a given point
+const getdistance = catchasync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+  if (!lat || !lng) {
+    next(
+      new appError(
+        'Please provide latitude and longitude in the format lat,lng.',
+        400
+      )
+    );
+  }
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      distances,
+    },
+  });
+});
 module.exports = {
   getalltours,
   createnewtour,
@@ -250,6 +290,7 @@ module.exports = {
   gettourstats,
   getmonthlyplans,
   gettourswithin,
+  getdistance,
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
