@@ -19,6 +19,11 @@ toursrouter
     authcontroller.restrictto('admin', 'leadguide', 'guide'),
     tourcontroller.getmonthlyplans
   );
+// this route is reponsible for finding tour within lat and lang
+toursrouter
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourcontroller.gettourswithin);
+
 toursrouter
   .route('/')
   // protect middleware to make user login before and check user before getting all tours
