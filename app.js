@@ -14,7 +14,12 @@ const userrouter = require('./routes/userRoutes');
 const reviewrouter = require('./routes/reviewRoutes');
 const apperror = require('./utils/appError');
 const errorController = require('./controller/errorController');
+const path = require('path');
 console.log(process.env.NODE_ENV);
+// setting up view engine as pug
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+app.set(express.static(path.join(__dirname, 'public')));
 // GLOBAL MIDDLEWARES
 // Security HTTP Headers
 app.use(helmet());
@@ -46,6 +51,11 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   req.requesttime = new Date().toISOString();
   next();
+});
+
+// Home route to render
+app.use('/', (req, res) => {
+  res.status(200).render('base');
 });
 
 // including router for the tours
