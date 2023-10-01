@@ -19,7 +19,7 @@ console.log(process.env.NODE_ENV);
 // setting up view engine as pug
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
-app.set(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 // GLOBAL MIDDLEWARES
 // Security HTTP Headers
 app.use(helmet());
