@@ -1,9 +1,20 @@
 doctype html 
 html
     head 
-        title Natours 
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        title Natours | Exciting tours for adventurous people 
         link(rel='stylesheet' type='text/css' href='css/style.css')
         link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+        link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
     body 
-        h1 The Park Camper
-        p Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis pariatur velit voluptatem magnam eaque odit, quas aperiam esse recusandae. Reiciendis quia vel ex id ad esse velit perferendis excepturi asperiores?
+        //- HEADER
+        include _header
+        //- CONTENT
+        main.main
+            h1= tour
+        //- FOOTER
+        include _footer
+
+        //- h1 The Park Camper
+        //- p Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis pariatur velit voluptatem magnam eaque odit, quas aperiam esse recusandae. Reiciendis quia vel ex id ad esse velit perferendis excepturi asperiores?
