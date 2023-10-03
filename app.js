@@ -54,8 +54,20 @@ app.use((req, res, next) => {
 });
 
 // Home route to render
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
   res.status(200).render('base');
+});
+// Overview route to get all tour
+app.get('/overview', (req, res) => {
+  res.status(200).render('overview', {
+    title: 'All tours',
+  });
+});
+// Tour route to get particular tour
+app.get('/tour', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'The Forset Hiker',
+  });
 });
 
 // including router for the tours
