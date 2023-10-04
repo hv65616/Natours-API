@@ -12,6 +12,7 @@ const xss = require('xss-clean');
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
 const reviewrouter = require('./routes/reviewRoutes');
+const viewrouter = require('./routes/viewRoutes');
 const apperror = require('./utils/appError');
 const errorController = require('./controller/errorController');
 const path = require('path');
@@ -53,22 +54,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Home route to render
-app.get('/', (req, res) => {
-  res.status(200).render('base');
-});
-// Overview route to get all tour
-app.get('/overview', (req, res) => {
-  res.status(200).render('overview', {
-    title: 'All tours',
-  });
-});
-// Tour route to get particular tour
-app.get('/tour', (req, res) => {
-  res.status(200).render('tour', {
-    title: 'The Forset Hiker',
-  });
-});
+// including router for views
+app.use('/', viewrouter);
 
 // including router for the tours
 app.use('/api/v1/tours', toursrouter);
