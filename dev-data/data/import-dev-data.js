@@ -1,7 +1,7 @@
 const fs = require('fs');
 const tour = require('../../models/tourModels');
 const dotenv = require('dotenv');
-dotenv.config({ path: '../../config.env' });
+dotenv.config({ path: './config.env' });
 const mongoose = require('mongoose');
 const port = process.env.PORT || 3000;
 const db = process.env.DATABASE.replace(
