@@ -46,6 +46,16 @@ block content
                         span.overview-box__text=`${tour.ratingsAverage} / 5`
 
                 .overview-box__group
+                    //- As tour guides data is not available the below code is commented
+                    //- h2.heading-secondary.ma-bt-lg Your tour guides
+                    //- each guide in tour.guides
+                    //-     .overview-box__detail
+                    //-         img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
+                    //-         - if(guide.role==='lead-guide')
+                    //-             span.overview-box__label Lead Guide 
+                    //-         - if(guide.role === 'guide')
+                    //-             span.overview-box__label Tour Guide
+                    //-         span.overview-box__text=guide.name
                     h2.heading-secondary.ma-bt-lg Your tour guides
                     .overview-box__detail
                         img.overview-box__img(src='/img/users/user-19.jpg', alt='Lead guide')
@@ -60,23 +70,32 @@ block content
                         span.overview-box__label Intern
                         span.overview-box__text Max Smith
 
-    .description-box
-        h2.heading-secondary.ma-bt-lg About the park camper tour
-        p.description__text Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        p.description__text Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum!
+        .description-box
+            h2.heading-secondary.ma-bt-lg= `About ${tour.name} tour`
+            - const paragraphs = tour.description.split('\n')
+            each p in paragraphs 
+                p.description__text= p
 
     section.section-pictures
-        .picture-box
-            img.picture-box__img.picture-box__img--1(src='/img/tour-5-1.jpg', alt='The Park Camper Tour 1')
-        .picture-box
-            img.picture-box__img.picture-box__img--2(src='/img/tour-5-2.jpg', alt='The Park Camper Tour 1')
-        .picture-box
-            img.picture-box__img.picture-box__img--3(src='/img/tour-5-3.jpg', alt='The Park Camper Tour 1')
+        each img,i in tour.images
+            .picture-box
+                img.picture-box__img(src=`/img/tours/${img}`, alt=`The Park Camper Tour ${i+1}`,class=`picture-box__img--${i+1}`)
 
     section.section-map
     #map
 
     section.section-reviews
+        .reviews
+            each review in tour.reviews
+                .reviews__card
+                    .reviews__avatar
+                        img.reviews__avatar-img(src=`/img/users/${review.user.photo}`, alt=`${review.user.name}`)
+                        h6.reviews__user=review.user.name
+                    p.reviews__text=review.review
+                    .reviews__rating
+                        each star in [1,2,3,4,5]
+                            svg.reviews__star(class=`reviews__star--${review.rating>=star?'active':'inactive'}`)
+                                use(xlink:href='/img/icons.svg#icon-star')
         .reviews
             .reviews__card
                 .reviews__avatar
@@ -99,9 +118,9 @@ block content
         .cta
             .cta__img.cta__img--logo
                 img(src='/img/logo-white.png', alt='Natours logo')
-            img.cta__img.cta__img--1(src='/img/tour-5-2.jpg', alt='')
-            img.cta__img.cta__img--2(src='/img/tour-5-1.jpg', alt='')
+            img.cta__img.cta__img--1(src=`/img/tours/${tour.images[1]}`, alt='Tour Picture')
+            //- img.cta__img.cta__img--2(src=`/img/tours/${tour.images[2]}`, alt='Tour Picture')
             .cta__content
                 h2.heading-secondary What are you waiting for?
-                p.cta__text 10 days. 1 adventure. Infinite memories. Make it yours today!
+                p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
                 button.btn.btn--green.span-all-rows Book tour now!
