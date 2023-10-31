@@ -5,4 +5,5 @@ const viewcontroller = require('../controller/viewController');
 router.get('/overview', viewcontroller.getoverview);
 // Tour route to get particular tour
 router.get('/tour/:slug', viewcontroller.gettour);
+router.get('/login', viewcontroller.getloginform);
 module.exports = router;
