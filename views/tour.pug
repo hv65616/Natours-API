@@ -1,7 +1,11 @@
 //- This way of extending the base template allow user to use the base tempplate for all other template which reduce re writing of code
 extends base
 block append head 
-    //- script(src="/js/mapbox.js") 
+    //- Using leaflet custom script and link tag
+    link(rel='stylesheet' href='https://unpkg.com/leaflet@1.6.0/dist/leaflet.css')
+    script(src='https://unpkg.com/leaflet@1.6.0/dist/leaflet.js')
+    script(src='/js/mapbox.js' defer)
+
 block content
     section.section-header
         .header__hero
