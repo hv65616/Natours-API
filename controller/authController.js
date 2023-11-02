@@ -82,7 +82,6 @@ const login = catchasync(async (req, res, next) => {
   });
 });
 
-
 // This middleware is used which allow user to first login then see all the tours available
 const protect = catchasync(async (req, res, next) => {
   // get token and check if its there or not
@@ -92,6 +91,8 @@ const protect = catchasync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
@@ -272,6 +273,33 @@ const updatepassword = catchasync(async (req, res, next) => {
 //     token,
 //   });
 // });
+
+// Only for rendered pages, no errors
+const isloggedin = catchasync(async (req, res, next) => {
+  // console.log(req.cookies.jwt);
+  if (req.cookies.jwt) {
+    // verify token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+    // check if user exists
+    const freshuser = await User.findById(decoded.id);
+    if (!freshuser) {
+      return next();
+    }
+    // bug - code is getting exited from above because of user id
+    // check if user change password after token was issued
+    console.log('is logged in');
+    if (freshuser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+    // There is a logged in user
+    res.locals.user = freshuser;
+    return next();
+  }
+  next();
+});
 module.exports = {
   signup,
   login,
@@ -280,4 +308,5 @@ module.exports = {
   forgotpassword,
   resetpassword,
   updatepassword,
+  isloggedin,
 };
