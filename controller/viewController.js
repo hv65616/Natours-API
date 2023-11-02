@@ -24,8 +24,10 @@ const gettour = catchasync(async (req, res) => {
   });
 });
 const getloginform = catchasync(async (req, res) => {
-  res.status(200).render('login',{
-    title: 'Log Into Your Account'
-  })
+  res
+    .status(200)
+    .render('login', {
+      title: 'Log Into Your Account',
+    });
 });
 module.exports = { getoverview, gettour,getloginform };
