@@ -9,6 +9,7 @@ const helmet = require('helmet');
 const mongosanitize = require('express-mongo-sanitize');
 // sanitize against xss
 const xss = require('xss-clean');
+const cookieparser = require("cookie-parser");
 const toursrouter = require('./routes/tourRoutes');
 const userrouter = require('./routes/userRoutes');
 const reviewrouter = require('./routes/reviewRoutes');
@@ -18,17 +19,24 @@ const errorController = require('./controller/errorController');
 const path = require('path');
 console.log(process.env.NODE_ENV);
 
-
 // Further HELMET configuration for Security Policy (CSP) for disableing the CORS that are generated while displaying the map
-const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const scriptSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js',
+];
 const styleSrcUrls = [
   'https://unpkg.com/',
   'https://tile.openstreetmap.org',
-  'https://fonts.googleapis.com/'
+  'https://fonts.googleapis.com/',
 ];
-const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
+const connectSrcUrls = [
+  'https://unpkg.com',
+  'https://tile.openstreetmap.org',
+  'http://127.0.0.1:3000/api/v1/user/login',
+];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
- 
+
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -38,12 +46,11 @@ app.use(
       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
       workerSrc: ["'self'", 'blob:'],
       objectSrc: [],
-      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
-      fontSrc: ["'self'", ...fontSrcUrls]
-    }
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:', 'http://localhost:3000'],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
   })
 );
-
 
 // setting up view engine as pug
 app.set('view engine', 'pug');
@@ -51,7 +58,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 // GLOBAL MIDDLEWARES
 // Security HTTP Headers
-// It is commented as above we have written custom helmet config 
+// It is commented as above we have written custom helmet config
 // app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   // it basically show us what request you made what endpoint you hit what is its status and how much time it took and soon information
@@ -67,6 +74,7 @@ const limiter = ratelimit({
 app.use('/api', limiter);
 // this is a middleware
 app.use(express.json());
+app.use(cookieparser())
 // data sanitization against nosql query injections
 app.use(mongosanitize());
 // data sanitization against xss
@@ -74,6 +82,7 @@ app.use(xss());
 // custom middleware-1
 app.use((req, res, next) => {
   console.log('Custom Middleware');
+  // console.log(req.cookies);
   next();
 });
 
