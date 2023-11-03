@@ -18,6 +18,8 @@ const signup = catchasync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     //passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
+    photo: req.body.photo,
+    active: req.body.active
   });
   // JWT Auth token created which is using id of the user and later storing that token into the database. The below created jwt token does not store id into its token
   const payload = { id: newuser._id };
@@ -288,7 +290,6 @@ const isloggedin = catchasync(async (req, res, next) => {
     if (!freshuser) {
       return next();
     }
-    // bug - code is getting exited from above because of user id
     // check if user change password after token was issued
     console.log('is logged in');
     if (freshuser.changedPasswordAfter(decoded.iat)) {
