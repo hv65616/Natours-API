@@ -1,3 +1,15 @@
+const hidealerts = () => {
+  const el = document.querySelector('.alert');
+  if (el) {
+    el.parentElement.removeChild(el);
+  }
+};
+const showalerts = (type, msg) => {
+  hidealerts();
+  const markup = `<div class="alert alert--${type}">${msg}</div>`;
+  document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
+  window.setTimeout(hidealerts, 5000);
+};
 const login = async (email, password) => {
   console.log(email, password);
   try {
@@ -10,7 +22,7 @@ const login = async (email, password) => {
       },
     });
     if (res.data.status === 'success') {
-      alert('Logged In Suceess');
+      showalerts('success', 'Logged In Suceess');
       window.setTimeout(() => {
         location.assign('/overview');
       }, 1500);
@@ -18,7 +30,7 @@ const login = async (email, password) => {
     console.log('Hello from login try');
     // console.log(res);
   } catch (error) {
-    alert(error.response.data.message);
+    showalerts('error', error.response.data.message);
     console.log('Hello from login error');
     // console.log(error.response.data);
   }
@@ -29,3 +41,4 @@ document.querySelector('.form').addEventListener('submit', (e) => {
   const password = document.getElementById('password').value;
   login(email, password);
 });
+
