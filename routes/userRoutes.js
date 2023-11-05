@@ -7,6 +7,8 @@ const authcontroller = require('../controller/authController');
 userrouter.post('/signup', authcontroller.signup);
 // route for login
 userrouter.post('/login', authcontroller.login);
+// route for logout
+userrouter.get('/logout', authcontroller.logout);
 // route for forgot password
 userrouter.post('/forgotpassword', authcontroller.forgotpassword);
 // route for reset password
