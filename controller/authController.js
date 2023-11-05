@@ -19,7 +19,7 @@ const signup = catchasync(async (req, res, next) => {
     //passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
     photo: req.body.photo,
-    active: req.body.active
+    active: req.body.active,
   });
   // JWT Auth token created which is using id of the user and later storing that token into the database. The below created jwt token does not store id into its token
   const payload = { id: newuser._id };
@@ -83,6 +83,18 @@ const login = catchasync(async (req, res, next) => {
     },
   });
 });
+
+// The logout route implementation which make the loggedin jwt into a false jwt and set it into the browser
+const logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expiresIn: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    message: 'Loggedout Success',
+  });
+};
 
 // This middleware is used which allow user to first login then see all the tours available
 const protect = catchasync(async (req, res, next) => {
@@ -277,30 +289,35 @@ const updatepassword = catchasync(async (req, res, next) => {
 // });
 
 // Only for rendered pages, no errors
-const isloggedin = catchasync(async (req, res, next) => {
-  // console.log(req.cookies.jwt);
-  if (req.cookies.jwt) {
-    // verify token
-    const decoded = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
-    // check if user exists
-    const freshuser = await User.findById(decoded.id);
-    if (!freshuser) {
+const isloggedin = async (req, res, next) => {
+  console.log(req.cookies.jwt);
+  // when login route hit try block run and when logout route hit catch block run
+  try {
+    if (req.cookies.jwt) {
+      // verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+      // check if user exists
+      const freshuser = await User.findById(decoded.id);
+      if (!freshuser) {
+        return next();
+      }
+      // check if user change password after token was issued
+      console.log('is logged in');
+      if (freshuser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      // There is a logged in user
+      res.locals.user = freshuser;
       return next();
     }
-    // check if user change password after token was issued
-    console.log('is logged in');
-    if (freshuser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-    // There is a logged in user
-    res.locals.user = freshuser;
+  } catch (error) {
     return next();
   }
   next();
-});
+};
 module.exports = {
   signup,
   login,
@@ -310,4 +327,5 @@ module.exports = {
   resetpassword,
   updatepassword,
   isloggedin,
+  logout,
 };
