@@ -1,29 +1,55 @@
 const appError = require('../utils/appError');
 
-const senderrorfordev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
-  });
-};
-const senderrorforprod = (err, res) => {
-  // Operational error
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
+const senderrorfordev = (req, err, res) => {
+  // API
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
       status: err.status,
+      error: err,
       message: err.message,
+      stack: err.stack,
     });
   }
-  // Programming or any other kind of error
-  else {
+  console.error('ERROR->', err);
+  // RENDERED WEBSITE
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    msg: err.message,
+  });
+};
+const senderrorforprod = (req, err, res) => {
+  // API
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      // Operational error
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
+    // Programming or any other kind of error
     console.error('ERROR->', err);
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Something went wrong!!!!!',
     });
   }
+  // RENDERED WEBSITE
+  if (err.isOperational) {
+    // Operational error
+    // console.log(err);
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong',
+      msg: err.message,
+    });
+  }
+  // Programming or any other kind of error
+
+  console.error('ERROR->', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    msg: 'Please try again later',
+  });
 };
 // This function is responsible to handle error of our mongoose
 const handleCastErrorDB = (err) => {
@@ -53,9 +79,10 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
-    senderrorfordev(err, res);
+    senderrorfordev(req, err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
+    error.message = err.message;
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
     }
@@ -71,6 +98,6 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'TokenExpiredError') {
       error = handletokenexpirederror(error);
     }
-    senderrorforprod(error, res);
+    senderrorforprod(req, error, res);
   }
 };
