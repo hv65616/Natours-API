@@ -35,7 +35,7 @@ const login = async (email, password) => {
     // console.log(error.response.data);
   }
 };
-document.querySelector('.form').addEventListener('submit', (e) => {
+document.querySelector('.form--login').addEventListener('submit', (e) => {
   e.preventDefault();
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
