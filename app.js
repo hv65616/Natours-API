@@ -92,6 +92,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.urlencoded({extended:true, limit: '10kb'}))
+
 // including router for views
 app.use('/', viewrouter);
 
