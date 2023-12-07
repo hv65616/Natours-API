@@ -12,10 +12,10 @@ const filterObj = (obj, ...allowedfields) => {
 };
 
 // getme middleware created
-const getme = (req,res,next)=>{
+const getme = (req, res, next) => {
   req.params.id = req.user.id;
-  next()
-}
+  next();
+};
 // getallusers route functionality implemented
 const getallusers = catchasync(async (req, res, next) => {
   const users = await User.find();
@@ -30,6 +30,8 @@ const getallusers = catchasync(async (req, res, next) => {
 
 // updating the details of the user
 const updateMe = catchasync(async (req, res, next) => {
+  console.log(req.file);
+  console.log(req.body);
   // create error if user try to update password
   if (req.body.password || req.body.passwordConfirm) {
     return next(
