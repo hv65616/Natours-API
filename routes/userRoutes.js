@@ -1,8 +1,12 @@
 const express = require('express');
+const multer = require("multer");
 const userrouter = express.Router();
 const usercontroller = require('../controller/userController');
 // Adding the route for the creating user
 const authcontroller = require('../controller/authController');
+
+// configuration of multer
+const upload = multer({dest:'public/img/users'})
 // route for signup
 userrouter.post('/signup', authcontroller.signup);
 // route for login
@@ -27,7 +31,7 @@ userrouter.get(
   usercontroller.getuser
 );
 // route for updating the user details apart from password
-userrouter.patch('/updateMe', authcontroller.protect, usercontroller.updateMe);
+userrouter.patch('/updateMe', upload.single('photo'),authcontroller.protect, usercontroller.updateMe);
 // route for deleting the user i.e marking it as inactive
 userrouter.delete('/deleteMe', authcontroller.protect, usercontroller.deleteMe);
 // route for getallusers and createusers
