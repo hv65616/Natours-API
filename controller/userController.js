@@ -2,6 +2,32 @@ const catchasync = require('../utils/catchAsync');
 const User = require('../models/userModel');
 const apperror = require('../utils/appError');
 const factory = require('./handlerFactory');
+const multer = require('multer');
+
+// Creating a multer storage
+const multerstorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+
+// Creating a multer filer
+const multerfilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new apperror('Not an image! Please upload only images'), false);
+  }
+};
+
+// configuration of multer
+const upload = multer({ storage: multerstorage, fileFilter: multerfilter });
+const uploaduserphoto = upload.single('photo');
+
 // this function is used to filter the data passed as req.body ans only consider those fields which are part of allowed fields it is pure javascript not nodejs
 const filterObj = (obj, ...allowedfields) => {
   const newobject = {};
@@ -95,4 +121,5 @@ module.exports = {
   deleteuser,
   updateMe,
   deleteMe,
+  uploaduserphoto,
 };
