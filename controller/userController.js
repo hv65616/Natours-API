@@ -56,8 +56,8 @@ const getallusers = catchasync(async (req, res, next) => {
 
 // updating the details of the user
 const updateMe = catchasync(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
+  // console.log(req.file);
+  // console.log(req.body);
   // create error if user try to update password
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -69,6 +69,7 @@ const updateMe = catchasync(async (req, res, next) => {
   }
   // filtered out unwanted field names that are not allowed
   const filteredbody = filterObj(req.body, 'name', 'email');
+  if(req.file) filteredbody.photo = req.file.filename;
   // update user document
   const userupdated = await User.findByIdAndUpdate(req.user.id, filteredbody, {
     new: true,
