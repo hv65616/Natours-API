@@ -3,17 +3,22 @@ const User = require('../models/userModel');
 const apperror = require('../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
+// image processing library
+const sharp = require('sharp');
 
 // Creating a multer storage
-const multerstorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users');
-  },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  },
-});
+// const multerstorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+// This way image stored as a buffer that why there is no need of above code
+const multerstorage = multer.memoryStorage();
 
 // Creating a multer filer
 const multerfilter = (req, file, cb) => {
@@ -27,6 +32,18 @@ const multerfilter = (req, file, cb) => {
 // configuration of multer
 const upload = multer({ storage: multerstorage, fileFilter: multerfilter });
 const uploaduserphoto = upload.single('photo');
+
+// middleware for resizing the user photo
+const resizeuserphoto = (req, res, next) => {
+  if (!req.file) return next();
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+  next();
+};
 
 // this function is used to filter the data passed as req.body ans only consider those fields which are part of allowed fields it is pure javascript not nodejs
 const filterObj = (obj, ...allowedfields) => {
@@ -69,7 +86,7 @@ const updateMe = catchasync(async (req, res, next) => {
   }
   // filtered out unwanted field names that are not allowed
   const filteredbody = filterObj(req.body, 'name', 'email');
-  if(req.file) filteredbody.photo = req.file.filename;
+  if (req.file) filteredbody.photo = req.file.filename;
   // update user document
   const userupdated = await User.findByIdAndUpdate(req.user.id, filteredbody, {
     new: true,
@@ -123,4 +140,5 @@ module.exports = {
   updateMe,
   deleteMe,
   uploaduserphoto,
+  resizeuserphoto,
 };
