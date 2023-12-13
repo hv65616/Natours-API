@@ -32,6 +32,7 @@ userrouter.patch(
   '/updateMe',
   authcontroller.protect,
   usercontroller.uploaduserphoto,
+  usercontroller.resizeuserphoto,
   usercontroller.updateMe
 );
 // route for deleting the user i.e marking it as inactive
