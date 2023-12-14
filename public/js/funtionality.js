@@ -35,15 +35,12 @@ const login = async (email, password) => {
     // console.log(error.response.data);
   }
 };
-const updatedata = async (name, email) => {
+const updatedata = async (data, type) => {
   try {
     const res = await axios({
       method: 'PATCH',
       url: 'http://localhost:3000/api/v1/user/updateMe',
-      data: {
-        name,
-        email,
-      },
+      data,
     });
     if (res.data.status === 'success') {
       showalerts('success', 'Profile Updated Successfully!');
@@ -82,11 +79,12 @@ document.addEventListener('click', (e) => {
       const password = document.getElementById('password').value;
       login(email, password);
     } else if (form.classList.contains('form-user-data')) {
-      // User data form submitted
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      updatedata(name, email);
+      const form = new FormData();
+      form.append('name', document.getElementById('name').value);
+      form.append('email', document.getElementById('email').value);
+      form.append('photo', document.getElementById('photo').files[0]);
+      console.log(form);
+      updatedata(form, 'data');
     }
   }
 });
-
