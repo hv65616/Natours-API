@@ -42,6 +42,8 @@ toursrouter
   .patch(
     authcontroller.protect,
     authcontroller.restrictto('admin', 'leadguide'),
+    tourcontroller.uploadtourphoto,
+    tourcontroller.resizetourimages,
     tourcontroller.updatetour
   )
   // restrictto middleware to check the role of user before deleting the tour
