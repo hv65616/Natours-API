@@ -8,6 +8,42 @@ const apifeatures = require('../utils/apiFeatures.js');
 const catchasync = require('../utils/catchAsync');
 const appError = require('../utils/appError');
 const factory = require('./handlerFactory');
+const multer = require('multer');
+// image processing library
+const sharp = require('sharp');
+
+// This way image stored as a buffer that why there is no need of above code
+const multerstorage = multer.memoryStorage();
+
+// Creating a multer filer
+const multerfilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new apperror('Not an image! Please upload only images'), false);
+  }
+};
+
+// configuration of multer
+const upload = multer({ storage: multerstorage, fileFilter: multerfilter });
+
+// uploade tour photo
+const uploadtourphoto = upload.fields([
+  {
+    name: 'imageCover',
+    maxCount: 1,
+  },
+  {
+    name: 'images',
+    maxCount: 3,
+  },
+]);
+
+// resize tour image
+const resizetourimages = (req, res, next) => {
+  console.log(req.files);
+  next();
+};
 // created a middleware for functioning of endpoint named as top-5-cheaptours and in this middle ware we are passing default values for limit sort and fields
 const aliastoptours = (req, res, next) => {
   req.query.limit = '5';
@@ -291,6 +327,8 @@ module.exports = {
   getmonthlyplans,
   gettourswithin,
   getdistance,
+  uploadtourphoto,
+  resizetourimages,
 };
 
 // This is discarded in further developement process as it uses the local json file for fetching and updating the data
